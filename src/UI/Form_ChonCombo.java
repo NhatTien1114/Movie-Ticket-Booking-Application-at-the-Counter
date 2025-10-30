@@ -23,12 +23,15 @@ public class Form_ChonCombo extends JPanel implements ActionListener {
 	private JButton btnInfo;
 	private List<Ghe> gheDaChon;
 	private SuatChieu suatChieu;
+	private String gioBatDauStr;
+	
 
-	public Form_ChonCombo(DanhSachCombo dsCombo, SuatChieu suatChieu, List<Ghe> gheDaChon, Runnable onBack) {
+	public Form_ChonCombo(DanhSachCombo dsCombo, SuatChieu suatChieu, String gioBatDauStr, List<Ghe> gheDaChon, Runnable onBack) {
 		this.onBack = onBack;
 		this.dsCombo = dsCombo;
 		this.suatChieu = suatChieu;
 		this.gheDaChon = gheDaChon;
+		this.gioBatDauStr = gioBatDauStr;
 
 		setLayout(new BorderLayout());
 		setBackground(primary);
@@ -207,7 +210,7 @@ public class Form_ChonCombo extends JPanel implements ActionListener {
 	                .toList();
 
 	        frame.setContentPane(new Form_ThongTinKhachHang(
-	                tenPhim, thoiLuong, soGheDaChon, danhSachGhe, giaVe, combos,
+	                tenPhim, thoiLuong, soGheDaChon, danhSachGhe, giaVe, combos, gioBatDauStr, 
 	                () -> { // hàm quay lại (từ Form_ThongTinKhachHang)
 	                    // Gắn lại chính instance Form_ChonCombo đang chạy để bảo toàn trạng thái
 	                    frame.setContentPane(Form_ChonCombo.this); 
@@ -215,6 +218,9 @@ public class Form_ChonCombo extends JPanel implements ActionListener {
 	                    frame.repaint();
 	                }
 	        ));
+	        frame.setSize(1000, 700);
+	        frame.setLocationRelativeTo(null);
+	        
 	        frame.revalidate();
 	        frame.repaint();
 	    }

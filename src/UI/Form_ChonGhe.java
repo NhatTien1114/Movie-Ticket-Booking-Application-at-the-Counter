@@ -26,14 +26,16 @@ public class Form_ChonGhe extends JPanel implements ActionListener {
 	private Consumer<List<Ghe>> actionTiepTheo;
 	private Runnable actionQuayLai;
 	private SuatChieu suatChieu;
+	private String gioBatDauStr;
 
-	public Form_ChonGhe(Phim phim, PhongChieu phongChieu, SuatChieu suatChieu, Runnable actionQuayLai,
+	public Form_ChonGhe(Phim phim, PhongChieu phongChieu, SuatChieu suatChieu,String gioBatDauStr, Runnable actionQuayLai, 
 			Consumer<List<Ghe>> actionTiepTheo) {
 		this.phim = phim;
 		this.phongChieu = phongChieu;
 		this.actionQuayLai = actionQuayLai;
 		this.suatChieu = suatChieu;
 		this.actionTiepTheo = actionTiepTheo;
+		this.gioBatDauStr = gioBatDauStr;
 		setLayout(new BorderLayout());
 		setBackground(new Color(10, 14, 35));
 

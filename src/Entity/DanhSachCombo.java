@@ -53,8 +53,8 @@ public class DanhSachCombo {
 	}
 	
 	public void khoiTaoDemo() {
-		dsCombo.add(new ComboDoAn("CB01", "Bắp lớn", 100000, "src/Image/bắp lớn.png", 100));
-		dsCombo.add(new ComboDoAn("CB02", "Coca", 40000, "src/Image/coca.png", 100));
+		dsCombo.add(new ComboDoAn("CB01", "Bắp lớn", 100000, "src/Image/bắp lớn.png", 0));
+		dsCombo.add(new ComboDoAn("CB02", "Coca", 40000, "src/Image/coca.png", 0));
 	}
 
 }

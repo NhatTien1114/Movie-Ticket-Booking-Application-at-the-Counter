@@ -43,6 +43,7 @@ public class Form_DatVe extends JFrame implements ActionListener, MouseListener 
 	private PhongChieu phongChieuDangChon;
 	private SuatChieu suatChieuHienTai; // Lưu trữ SuatChieu được truyền vào ban đầu
 	private List<Ghe> gheDaChon; // KHỞI TẠO BIẾN CẦN THIẾT CHO BƯỚC TIẾP THEO
+	private String gioBatDauStr;
 
 	// Dữ liệu mock (tạo mới SuatChieu khi chọn giờ)
 	private PhongChieu phong1 = new PhongChieu("P01", true, null);
@@ -210,6 +211,7 @@ public class Form_DatVe extends JFrame implements ActionListener, MouseListener 
 	        	    phimDangChon,
 	        	    phongChieuDangChon,
 	        	    suatChieuDuocChon,
+	        	    gioBatDauStr,
 	        	    () -> { 
 	        	        getContentPane().removeAll();
 	        	        add(pnlPoster, BorderLayout.WEST);
@@ -225,7 +227,8 @@ public class Form_DatVe extends JFrame implements ActionListener, MouseListener 
 
 	        	        Form_ChonCombo formCombo = new Form_ChonCombo(
 	        	            dsCombo, 
-	        	            suatChieuDuocChon, 
+	        	            suatChieuDuocChon,
+	        	            gioBatDauStr,
 	        	            gheDaChon, 
 	        	            () -> { 
 	        	                getContentPane().removeAll();
@@ -244,12 +247,14 @@ public class Form_DatVe extends JFrame implements ActionListener, MouseListener 
 	        	revalidate();
 	        	repaint();
 	    } else if (o.equals(btnTime)) {
+	    	gioBatDauStr = btnTime.getText();
 	        phongChieuDangChon = phong1;
 	        btnTime.setBackground(highlight);
 	        btnTime2.setBackground(accent);
 	        btnSeatings.setEnabled(true); 
 
 	    } else if (o.equals(btnTime2)) {
+	    	gioBatDauStr = btnTime2.getText();
 	        phongChieuDangChon = phong2;
 	        btnTime2.setBackground(highlight);
 	        btnTime.setBackground(accent);
