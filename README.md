@@ -50,3 +50,37 @@ The system provides an intuitive interface to manage movies, showtimes, seats, f
 1. Clone this repository to your Eclipse workspace:
    ```bash
    git clone https://github.com/yourusername/CinemaTicketApp.git
+2. Open Eclipse → File → Import → Existing Projects into Workspace
+
+3. Configure MySQL connection in DatabaseConfig.java
+
+4. Run the main class:
+   ```bash
+   UI.MainFrame.java
+
+
+5. Start booking tickets right from the counter!
+
+📩 Example Email Output
+
+Subject: Cinema Ticket Confirmation
+Body:
+
+Thank you for your purchase!
+Movie: Avengers: Endgame
+Showtime: 19:00 - Room 3
+Seat: B5, B6
+Total: 250,000 VND
+QR Code attached for entry verification.
+
+🧑‍💻 Author
+
+Tống Nguyễn Nhật Tiến
+Email: tongnguyennhattien140805@gmail.com
+
+Project Type: Java Swing Application
+Purpose: Cinema Counter Ticket Booking System
+
+📜 License
+
+This project is developed for educational purposes and may be extended for commercial use.
