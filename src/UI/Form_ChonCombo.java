@@ -6,10 +6,12 @@ import java.awt.event.*;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import Entity.ComboDoAn;
 import Entity.DanhSachCombo;
 import Entity.Ghe;
+import Entity.HoaDon;
 import Entity.SuatChieu;
 
 public class Form_ChonCombo extends JPanel implements ActionListener {
@@ -24,14 +26,16 @@ public class Form_ChonCombo extends JPanel implements ActionListener {
 	private List<Ghe> gheDaChon;
 	private SuatChieu suatChieu;
 	private String gioBatDauStr;
+	private Consumer<HoaDon> onPayment;
 	
 
-	public Form_ChonCombo(DanhSachCombo dsCombo, SuatChieu suatChieu, String gioBatDauStr, List<Ghe> gheDaChon, Runnable onBack) {
+	public Form_ChonCombo(DanhSachCombo dsCombo, SuatChieu suatChieu, String gioBatDauStr, List<Ghe> gheDaChon, Runnable onBack, Consumer<HoaDon> onPayment) {
 		this.onBack = onBack;
 		this.dsCombo = dsCombo;
 		this.suatChieu = suatChieu;
 		this.gheDaChon = gheDaChon;
 		this.gioBatDauStr = gioBatDauStr;
+		this.onPayment =  onPayment;
 
 		setLayout(new BorderLayout());
 		setBackground(primary);
@@ -209,15 +213,24 @@ public class Form_ChonCombo extends JPanel implements ActionListener {
 	                .filter(c -> c.getSoLuong() > 0)
 	                .toList();
 
-	        frame.setContentPane(new Form_ThongTinKhachHang(
-	                tenPhim, thoiLuong, soGheDaChon, danhSachGhe, giaVe, combos, gioBatDauStr, 
-	                () -> { // hàm quay lại (từ Form_ThongTinKhachHang)
+	        Form_ThongTinKhachHang formThongTin = new Form_ThongTinKhachHang(
+	                tenPhim, 
+	                thoiLuong, 
+	                soGheDaChon, 
+	                danhSachGhe, 
+	                giaVe, 
+	                combos, 
+	                gioBatDauStr, 
+	                () -> { // Tham số thứ 8: Runnable onBack (quay lại form Combo này)
 	                    // Gắn lại chính instance Form_ChonCombo đang chạy để bảo toàn trạng thái
 	                    frame.setContentPane(Form_ChonCombo.this); 
 	                    frame.revalidate();
 	                    frame.repaint();
-	                }
-	        ));
+	                },
+	                this.onPayment // Tham số thứ 9: Consumer<HoaDon> onPayment
+	            );
+	        
+	        frame.setContentPane(formThongTin);
 	        frame.setSize(1000, 700);
 	        frame.setLocationRelativeTo(null);
 	        
