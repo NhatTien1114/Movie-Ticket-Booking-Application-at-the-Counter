@@ -7,6 +7,11 @@ public class Ve {
 	private Ghe ghe;
 	private SuatChieu suatChieu;
 
+	public Ve(double giaVe) {
+		super();
+		this.giaVe = giaVe;
+	}
+
 	public Ve(String maVe, double giaVe, boolean trangThaiSuDung, Ghe ghe, SuatChieu suatChieu) {
 		super();
 		this.maVe = maVe;
