@@ -14,6 +14,7 @@ import java.util.Locale;
 
 import Entity.DanhSachCombo;
 import Entity.Ghe;
+import Entity.HoaDon;
 import Entity.Phim;
 import Entity.PhongChieu;
 import Entity.SuatChieu;
@@ -44,6 +45,7 @@ public class Form_DatVe extends JFrame implements ActionListener, MouseListener 
 	private SuatChieu suatChieuHienTai; // Lưu trữ SuatChieu được truyền vào ban đầu
 	private List<Ghe> gheDaChon; // KHỞI TẠO BIẾN CẦN THIẾT CHO BƯỚC TIẾP THEO
 	private String gioBatDauStr;
+	private Consumer<HoaDon> onPayment;
 
 	// Dữ liệu mock (tạo mới SuatChieu khi chọn giờ)
 	private PhongChieu phong1 = new PhongChieu("P01", true, null);
@@ -237,7 +239,7 @@ public class Form_DatVe extends JFrame implements ActionListener, MouseListener 
 	        	                revalidate();
 	        	                repaint();
 	        	            }
-	        	        );
+	        	        ,  onPayment);
 	        	        add(formCombo, BorderLayout.CENTER);
 	        	        revalidate();
 	        	        repaint();
