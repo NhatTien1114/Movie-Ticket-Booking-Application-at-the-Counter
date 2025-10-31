@@ -26,10 +26,6 @@ The system provides an intuitive interface to manage movies, showtimes, seats, f
 - Generate a **QR code** for each completed transaction.
 - The QR code can be scanned for quick payment verification or ticket check-in.
 
-### 📧 Email Confirmation
-- After successful payment, the system **sends ticket details and QR code** directly to the customer’s email.
-- Email includes movie name, showtime, seat number, total cost, and attached QR image.
-
 ### 🧾 Invoice & History
 - Generate and print invoices.
 - Store transaction data for reporting and lookup.
@@ -38,9 +34,8 @@ The system provides an intuitive interface to manage movies, showtimes, seats, f
 
 ## 🏗️ Technologies Used
 - **Java Swing** – GUI design  
-- **JavaMail API** – Sending confirmation emails  
 - **ZXing Library** – Generating QR codes  
-- **MySQL** – Database management  
+- **SQL Server** – Database management  
 - **JDBC** – Database connection  
 - **AWT & Swing Components** – Interface styling  
 
