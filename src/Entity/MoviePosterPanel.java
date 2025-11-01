@@ -38,6 +38,7 @@ public class MoviePosterPanel extends JPanel {
 		lblPoster.setAlignmentX(0.5f);
 		lblPoster.setAlignmentY(0.5f);
 
+// ============================== TẠO LỚP MỜ KHI HOVER VÀO PHIM ==============================
 		overlay = new JPanel();
 		overlay.setLayout(new BoxLayout(overlay, BoxLayout.Y_AXIS));
 		overlay.setBackground(new Color(0, 0, 0, 220));
@@ -84,17 +85,13 @@ public class MoviePosterPanel extends JPanel {
 		});
 	}
 
-	// Trong Entity/MoviePosterPanel.java
-	// ...
 	public SuatChieu getSuatChieu() {
-	    return suatChieu; // Trả về đối tượng SuatChieu đã được lưu trong constructor
+	    return suatChieu; 
 	}
 
 	public Phim getPhim() {
-	    // Nên gọi qua SuatChieu để nhất quán
 	    return suatChieu.getPhim();
 	}
-	// ...
 
 	private ImageIcon resizeImage(String path, int width, int height) {
 		String fileName = path.substring(path.lastIndexOf('/') + 1);
