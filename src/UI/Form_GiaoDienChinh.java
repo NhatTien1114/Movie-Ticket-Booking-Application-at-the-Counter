@@ -3,6 +3,8 @@ package UI;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -21,12 +23,13 @@ import Entity.NhanVien;
 import Entity.Phim;
 import Entity.PhongChieu;
 import Entity.SuatChieu;
+import Entity.TaiKhoan;
 
 import java.util.Date;
 import java.util.Locale;
 import java.util.List;
 
-public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseListener, KeyListener {
+public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseListener, KeyListener, FocusListener {
 
 	private static final long serialVersionUID = 1L;
 	private JLabel lblTime;
@@ -85,7 +88,6 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 	private JTextField txtPathAnh;
 	private JTextField txtSearch;
 	private JPanel pMovieRow;
-	private MoviePosterPanel moviePanel;
 	private DefaultTableModel modelCombo;
 	private JButton btnThemCombo;
 	private JButton btnCapNhatCombo;
@@ -99,15 +101,16 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 	private JTextField txtPathCombo;
 	private JTable tableCombo;
 	
+	private TaiKhoan tk;
+	
 	private Form_ChonCombo formCombo; // Khai báo ở đầu class
-	private SuatChieu suatChieu;
 
 
 	public Form_GiaoDienChinh() {
 		setTitle("Hệ thống bán vé xem phim");
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+// KHAI BÁO DANH SÁCH NHÂN VIÊN | DANH SÁCH PHIM | DANH SÁCH COMBO CHO PHẦN MENU
 		dsNV = new DanhSachNhanVien();
 		dsPhim = new DanhSachPhim();
 		dsCombo = new DanhSachCombo();
@@ -116,7 +119,7 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 		JPanel pNorth = new JPanel(new BorderLayout());
 		pContainer.add(pNorth, BorderLayout.NORTH);
 		pCenter = new JPanel(new BorderLayout());
-
+		// ======================== PHẦN HIỂN THỊ NGÀY GIỜ ( THƯ VIỆN JDATEPICKER ) ========================
 		centerCardLayout = new CardLayout();
 		contentPanel = new JPanel(centerCardLayout);
 
@@ -145,7 +148,7 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		getContentPane().add(pContainer, BorderLayout.NORTH);
 		getContentPane().add(scrollPane, BorderLayout.CENTER);
-
+// ============================ PHẦN MENU BAR ============================
 		JMenuBar menuBar = new JMenuBar();
 		menuBar.setPreferredSize(new Dimension(0, 50));
 		menuBar.setOpaque(true);
@@ -209,7 +212,7 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 		menuPhim.setForeground(Color.WHITE);
 
 		menuBar.add(Box.createHorizontalGlue());
-
+// ============================ PHẦN ĐĂNG NHẬP / ĐĂNG KÝ ============================
 		boolean isLoggedIn = false;
 
 		JPanel userPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
@@ -217,7 +220,7 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 
 		if (isLoggedIn) {
 			JLabel userIcon = new JLabel(new ImageIcon(getClass().getResource("/Image/user.png")));
-			JLabel userName = new JLabel("nhanvien01");
+			JLabel userName = new JLabel("Xin chào " + tk.getTenDangNhap());
 			userName.setFont(new Font("Roboto", Font.BOLD, 14));
 			userName.setForeground(Color.WHITE);
 
@@ -248,7 +251,7 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 			userPanel.add(btnRegister);
 		}
 		menuBar.add(userPanel);
-
+// ======================== PHẦN SLIDE ẢNH ========================
 		cardLayout = new CardLayout();
 		slidePanel = new JPanel(cardLayout);
 		loadSlides();
@@ -257,12 +260,13 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 
 		startSlideShowTimer();
 
+//	======================== TÌM KIẾM ========================
 		JPanel pSearchAndTitle = new JPanel();
 		pSearchAndTitle.setLayout(new BoxLayout(pSearchAndTitle, BoxLayout.Y_AXIS));
 		pSearchAndTitle.setBackground(primary);
 
 		JLabel centerLabel = new JLabel("Bạn muốn xem phim gì?", JLabel.CENTER);
-		centerLabel.setFont(new Font("Roboto", Font.BOLD, 30));
+		centerLabel.setFont(new Font("Unbounded", Font.BOLD, 30));
 		centerLabel.setForeground(Color.WHITE);
 		centerLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		centerLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
@@ -272,7 +276,7 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 		JPanel pSearchFieldContainer = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		pSearchFieldContainer.setBackground(primary);
 
-//		================ TÌM KIẾM ================
+
 		txtSearch = new JTextField(50);
 		txtSearch.setPreferredSize(new Dimension(600, 45));
 		txtSearch.setFont(new Font("Roboto", Font.PLAIN, 16));
@@ -282,24 +286,10 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 		txtSearch.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
 
 		txtSearch.setText("  Tìm kiếm...");
-		txtSearch.addFocusListener(new java.awt.event.FocusAdapter() {
-			public void focusGained(java.awt.event.FocusEvent evt) {
-				if (txtSearch.getText().equals("  Tìm kiếm...")) {
-					txtSearch.setText("");
-				}
-			}
-
-			public void focusLost(java.awt.event.FocusEvent evt) {
-				if (txtSearch.getText().isEmpty()) {
-					txtSearch.setText("  Tìm kiếm...");
-				}
-			}
-		});
 
 		pSearchFieldContainer.add(txtSearch);
 
 		pSearchAndTitle.add(pSearchFieldContainer);
-// ======================================================================
 
 // =========================== PHẦN HIỂN THỊ PHIM ===========================
 		JPanel pHeader = new JPanel(new FlowLayout(FlowLayout.CENTER, 40, 20));
@@ -312,7 +302,7 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 		JButton[] buttons = { btnTatCa, btnDangChieu, btnSapRaMat };
 
 		for (JButton btn : buttons) {
-			btn.setFont(new Font("Roboto", Font.BOLD, 20));
+			btn.setFont(new Font("Unbounded", Font.BOLD, 20));
 			btn.setForeground(Color.WHITE);
 			btn.setBackground(primary);
 			btn.setFocusPainted(false);
@@ -324,9 +314,8 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 		pMovieRow = new JPanel(new GridLayout(5, 4, 20, 20));
 		pMovieRow.setBackground(primary);
 		pMovieRow.setBorder(BorderFactory.createEmptyBorder(10, 10, 30, 10));
-
-		// Giả định bạn đã import các Entity cần thiết: Entity.Phim, Entity.SuatChieu, Entity.PhongChieu, java.time.LocalDateTime
-
+		
+// HÀM KHI BẤM VÀO TÙY CHỌN ĐANG CHIẾU | SẮP RA MẮT | TẤT CẢ
 		Runnable capNhatPhim = () -> {
 		    pMovieRow.removeAll();
 
@@ -348,8 +337,6 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 		        };
 
 		        if (hienThi) {
-		            // SỬA LỖI: Tạo một đối tượng SuatChieu giả định (mockSuatChieu) cho Phim này
-		            // Giả định PhongChieu "P000" và thời gian hiện tại
 		            PhongChieu mockPhongChieu = new PhongChieu("P000", true, null); 
 		            SuatChieu mockSuatChieu = new SuatChieu(
 		                "SC_MOCK_" + phimHienThi.getMaPhim(), 
@@ -358,13 +345,12 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 		                mockPhongChieu
 		            );
 		            
-		            // Khởi tạo MoviePosterPanel với SuatChieu giả định
 		            MoviePosterPanel moviePanel = new MoviePosterPanel(mockSuatChieu);
 		            moviePanel.addMouseListener(this);
 		            pMovieRow.add(moviePanel);
 		        }
 		    }
-		    // Sau khi thêm các panel, cần cập nhật giao diện
+// SAU KHI CẬP NHẬT THÌ RENDER LẠI GIAO DIỆN
 		    pMovieRow.revalidate();
 		    pMovieRow.repaint();
 		};
@@ -398,19 +384,19 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 		pMoviesSection.setBackground(primary);
 		pMoviesSection.add(pHeader, BorderLayout.NORTH);
 		pMoviesSection.add(pMovieRow, BorderLayout.CENTER);
-// ==========================================================================
 
 // =========================== TRANG CHỦ ===========================
-		JPanel trangChuPanel = new JPanel(new BorderLayout());
-		trangChuPanel.add(slidePanel, BorderLayout.NORTH);
-		trangChuPanel.add(pSearchAndTitle, BorderLayout.CENTER);
-		trangChuPanel.add(pMoviesSection, BorderLayout.SOUTH);
+		JPanel pTrangChu = new JPanel(new BorderLayout());
+		pTrangChu.add(slidePanel, BorderLayout.NORTH);
+		pTrangChu.add(pSearchAndTitle, BorderLayout.CENTER);
+		pTrangChu.add(pMoviesSection, BorderLayout.SOUTH);
 
-		contentPanel.add(trangChuPanel, "TrangChu");
+		contentPanel.add(pTrangChu, "TrangChu");
+// =========================== HIỂN THỊ CÁC DANH SÁCH ===========================
 		quanLyNhanVienPanel = createQuanLyNhanVienPanel();
 		quanLyPhimPanel = createQuanLyPhimPanel();
 		quanLyComboPanel = createQuanLyComboPanel();
-// =========================== DANH SÁCH CÁC LOẠI ===========================
+
 		contentPanel.add(quanLyNhanVienPanel, "QuanLyNhanVien");
 		contentPanel.add(quanLyPhimPanel, "QuanLyPhim");
 		contentPanel.add(quanLyComboPanel, "QuanLyCombo");
@@ -447,6 +433,9 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 
 		// KEY LISTENER
 		txtSearch.addKeyListener(this);
+		
+		// FOCUS LISTENER
+		txtSearch.addFocusListener(this);
 
 // KHẮC PHỤC LỖI GIÚP HIỂN THỊ LÊN ĐẦU TRANG
 		SwingUtilities.invokeLater(() -> {
@@ -928,8 +917,8 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		Object source = e.getSource();
-		if (source.equals(table)) {
+		Object o = e.getSource();
+		if (o.equals(table)) {
 			int row = table.getSelectedRow();
 			if (row != -1) {
 				String maNV = model.getValueAt(row, 0).toString();
@@ -943,7 +932,7 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 				txtSdt.setText(sdt);
 			}
 			return;
-		} else if (source.equals(tableCombo)) {
+		} else if (o.equals(tableCombo)) {
 			int row = tableCombo.getSelectedRow();
 			if (row != -1) {
 				String maCombo = modelCombo.getValueAt(row, 0).toString();
@@ -959,7 +948,7 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 				txtPathCombo.setText(path);
 			}
 			return;
-		} else if (source.equals(tablePhim)) {
+		} else if (o.equals(tablePhim)) {
 			int row = tablePhim.getSelectedRow();
 			if (row != -1) {
 				String maPhim = modelPhim.getValueAt(row, 0).toString();
@@ -983,14 +972,11 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 			return;
 		}
 
-		if (source instanceof MoviePosterPanel) {
-	        MoviePosterPanel clickedPanel = (MoviePosterPanel) source;
-	        // Lấy đối tượng SuatChieu hợp lệ từ MoviePosterPanel
+		if (o instanceof MoviePosterPanel) {
+	        MoviePosterPanel clickedPanel = (MoviePosterPanel) o;
 	        SuatChieu selectedSuatChieu = clickedPanel.getSuatChieu();
 
-	        // **Dòng 992:** Kiểm tra suatChieu trước khi sử dụng
 	        if (selectedSuatChieu != null) { 
-	            // KHÔNG sử dụng biến suatChieu của lớp (vì nó null)
 	            new Form_HienThiThongTinPhim(selectedSuatChieu).setVisible(true); 
 	        } else {
 	            JOptionPane.showMessageDialog(this, "Thông tin suất chiếu không hợp lệ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
@@ -1047,7 +1033,6 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 	                    pMovieRow.add(moviePanel);
 	                }
 	                
-	                // Cập nhật giao diện để hiển thị các poster phim mới
 	                pMovieRow.revalidate();
 	                pMovieRow.repaint();
 	            }
@@ -1084,13 +1069,27 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 		// TODO Auto-generated method stub
 
 	}
+	
+	@Override
+	public void focusGained(FocusEvent e) {
+		if (txtSearch.getText().equals("  Tìm kiếm...")) {
+			txtSearch.setText("");
+		}
+	}
+
+	@Override
+	public void focusLost(FocusEvent e) {
+		if (txtSearch.getText().isEmpty()) {
+			txtSearch.setText("  Tìm kiếm...");
+		}
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		Object o = e.getSource();
 		if (o.equals(btnLogin)) {
 			Form_DangNhap form = new Form_DangNhap((username, password) -> {
-				if (username.equals("admin") && password.equals("123")) {
+				if (username.equals("Nhật Tiến") && password.equals("123")) {
 					JOptionPane.showMessageDialog(this, "Đăng nhập thành công!");
 					return;
 				} else {
@@ -1532,5 +1531,7 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 			}
 		}
 	}
+	
+	
 
 }
