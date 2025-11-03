@@ -9,6 +9,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -177,15 +179,29 @@ public class Form_DangNhap extends JFrame implements ActionListener, MouseListen
 		Object o = e.getSource();
 
 		if (o.equals(btnDangKy)) {
-			new Form_DangKy().setVisible(true);
-			dispose();
-		} else if (o.equals(btnDangNhap)) {
+			// Thay vì tạo mới, hãy gọi listener
+			if (listener != null) {
+				listener.onRegisterRequest();
+			}
+			dispose(); // Tự đóng
+
+		} else if (o.equals(btnDangNhap)) { // <--- ĐÃ ĐƯA RA NGOÀI
 			String user = txtTaiKhoan.getText();
 			String pass = new String(txtMatKhau.getPassword());
+
 			if (listener != null) {
-				listener.onLoginSuccess(user, pass);
+				// Sửa ở đây: Gọi onLoginAttempt
+				boolean loginSuccess = listener.onLoginAttempt(user, pass);
+
+				if (loginSuccess) {
+					dispose(); // Đăng nhập đúng -> tự đóng
+				} else {
+					// Đăng nhập sai -> báo lỗi và không đóng
+					JOptionPane.showMessageDialog(this, "Tên đăng nhập hoặc mật khẩu không đúng!", "Lỗi Đăng Nhập",
+							JOptionPane.ERROR_MESSAGE);
+				}
 			}
-			dispose();
+
 		}
 	}
 }

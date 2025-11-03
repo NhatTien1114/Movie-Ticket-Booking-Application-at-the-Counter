@@ -13,7 +13,6 @@ import java.text.SimpleDateFormat;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
-
 import Entity.DanhSachNhanVien;
 import Entity.DanhSachPhim;
 import Entity.ComboDoAn;
@@ -25,12 +24,17 @@ import Entity.PhongChieu;
 import Entity.SuatChieu;
 import Entity.TaiKhoan;
 
+import Interface.LoginListener;
+
 import java.util.Date;
 import java.util.Locale;
 import java.util.List;
 
 public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseListener, KeyListener, FocusListener {
 
+	private LoginListener listener;
+	private boolean isLoggedIn = false;
+	private String loggedInUsername = "";
 	private static final long serialVersionUID = 1L;
 	private JLabel lblTime;
 	private JButton btnLogin;
@@ -100,13 +104,15 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 	private JTextField txtGiaCombo;
 	private JTextField txtPathCombo;
 	private JTable tableCombo;
-	
+
 	private TaiKhoan tk;
-	
+
 	private Form_ChonCombo formCombo; // Khai báo ở đầu class
+	private JMenuBar menuBar;
+	private JPanel userPanel;
 
-
-	public Form_GiaoDienChinh() {
+	public Form_GiaoDienChinh(LoginListener listener) {
+		this.listener = listener;
 		setTitle("Hệ thống bán vé xem phim");
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -119,7 +125,8 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 		JPanel pNorth = new JPanel(new BorderLayout());
 		pContainer.add(pNorth, BorderLayout.NORTH);
 		pCenter = new JPanel(new BorderLayout());
-		// ======================== PHẦN HIỂN THỊ NGÀY GIỜ ( THƯ VIỆN JDATEPICKER ) ========================
+		// ======================== PHẦN HIỂN THỊ NGÀY GIỜ ( THƯ VIỆN JDATEPICKER )
+		// ========================
 		centerCardLayout = new CardLayout();
 		contentPanel = new JPanel(centerCardLayout);
 
@@ -149,7 +156,7 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 		getContentPane().add(pContainer, BorderLayout.NORTH);
 		getContentPane().add(scrollPane, BorderLayout.CENTER);
 // ============================ PHẦN MENU BAR ============================
-		JMenuBar menuBar = new JMenuBar();
+		menuBar = new JMenuBar();
 		menuBar.setPreferredSize(new Dimension(0, 50));
 		menuBar.setOpaque(true);
 		menuBar.setBackground(accent);
@@ -213,44 +220,13 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 
 		menuBar.add(Box.createHorizontalGlue());
 // ============================ PHẦN ĐĂNG NHẬP / ĐĂNG KÝ ============================
-		boolean isLoggedIn = false;
 
-		JPanel userPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
+		userPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
 		userPanel.setOpaque(false);
-
-		if (isLoggedIn) {
-			JLabel userIcon = new JLabel(new ImageIcon(getClass().getResource("/Image/user.png")));
-			JLabel userName = new JLabel("Xin chào " + tk.getTenDangNhap());
-			userName.setFont(new Font("Roboto", Font.BOLD, 14));
-			userName.setForeground(Color.WHITE);
-
-			userPanel.add(userIcon);
-			userPanel.add(userName);
-
-		} else {
-			JLabel userIcon = new JLabel(new ImageIcon(getClass().getResource("/Image/user.png")));
-			btnLogin = new JButton("Đăng nhập");
-			btnRegister = new JButton("Đăng ký");
-
-			Font btnFont = new Font("Roboto", Font.BOLD, 13);
-			btnLogin.setFont(btnFont);
-			btnRegister.setFont(btnFont);
-			btnLogin.setFocusPainted(false);
-			btnRegister.setFocusPainted(false);
-
-			btnLogin.setBackground(Color.yellow);
-			btnLogin.setForeground(Color.black);
-			btnRegister.setBackground(Color.yellow);
-			btnRegister.setForeground(Color.black);
-
-			btnLogin.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-			btnRegister.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-
-			userPanel.add(userIcon);
-			userPanel.add(btnLogin);
-			userPanel.add(btnRegister);
-		}
 		menuBar.add(userPanel);
+
+		updateUserPanel();
+
 // ======================== PHẦN SLIDE ẢNH ========================
 		cardLayout = new CardLayout();
 		slidePanel = new JPanel(cardLayout);
@@ -275,7 +251,6 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 
 		JPanel pSearchFieldContainer = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		pSearchFieldContainer.setBackground(primary);
-
 
 		txtSearch = new JTextField(50);
 		txtSearch.setPreferredSize(new Dimension(600, 45));
@@ -314,45 +289,41 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 		pMovieRow = new JPanel(new GridLayout(5, 4, 20, 20));
 		pMovieRow.setBackground(primary);
 		pMovieRow.setBorder(BorderFactory.createEmptyBorder(10, 10, 30, 10));
-		
+
 // HÀM KHI BẤM VÀO TÙY CHỌN ĐANG CHIẾU | SẮP RA MẮT | TẤT CẢ
 		Runnable capNhatPhim = () -> {
-		    pMovieRow.removeAll();
+			pMovieRow.removeAll();
 
-		    List<Phim> danhSachPhimHienThi = dsPhim.getDsPhim();
-		    String luaChonHienTai = "";
+			List<Phim> danhSachPhimHienThi = dsPhim.getDsPhim();
+			String luaChonHienTai = "";
 
-		    if (btnDangChieu.getBackground() == Color.WHITE)
-		        luaChonHienTai = "ĐANG CHIẾU";
-		    else if (btnSapRaMat.getBackground() == Color.WHITE)
-		        luaChonHienTai = "SẮP RA MẮT";
-		    else
-		        luaChonHienTai = "TẤT CẢ";
+			if (btnDangChieu.getBackground() == Color.WHITE)
+				luaChonHienTai = "ĐANG CHIẾU";
+			else if (btnSapRaMat.getBackground() == Color.WHITE)
+				luaChonHienTai = "SẮP RA MẮT";
+			else
+				luaChonHienTai = "TẤT CẢ";
 
-		    for (Phim phimHienThi : danhSachPhimHienThi) {
-		        boolean hienThi = switch (luaChonHienTai) {
-		            case "ĐANG CHIẾU" -> phimHienThi.isTrangThai();
-		            case "SẮP RA MẮT" -> !phimHienThi.isTrangThai();
-		            default -> true;
-		        };
+			for (Phim phimHienThi : danhSachPhimHienThi) {
+				boolean hienThi = switch (luaChonHienTai) {
+				case "ĐANG CHIẾU" -> phimHienThi.isTrangThai();
+				case "SẮP RA MẮT" -> !phimHienThi.isTrangThai();
+				default -> true;
+				};
 
-		        if (hienThi) {
-		            PhongChieu mockPhongChieu = new PhongChieu("P000", true, null); 
-		            SuatChieu mockSuatChieu = new SuatChieu(
-		                "SC_MOCK_" + phimHienThi.getMaPhim(), 
-		                java.time.LocalDateTime.now(), 
-		                phimHienThi, 
-		                mockPhongChieu
-		            );
-		            
-		            MoviePosterPanel moviePanel = new MoviePosterPanel(mockSuatChieu);
-		            moviePanel.addMouseListener(this);
-		            pMovieRow.add(moviePanel);
-		        }
-		    }
+				if (hienThi) {
+					PhongChieu mockPhongChieu = new PhongChieu("P000", true, null);
+					SuatChieu mockSuatChieu = new SuatChieu("SC_MOCK_" + phimHienThi.getMaPhim(),
+							java.time.LocalDateTime.now(), phimHienThi, mockPhongChieu);
+
+					MoviePosterPanel moviePanel = new MoviePosterPanel(mockSuatChieu);
+					moviePanel.addMouseListener(this);
+					pMovieRow.add(moviePanel);
+				}
+			}
 // SAU KHI CẬP NHẬT THÌ RENDER LẠI GIAO DIỆN
-		    pMovieRow.revalidate();
-		    pMovieRow.repaint();
+			pMovieRow.revalidate();
+			pMovieRow.repaint();
 		};
 
 		ActionListener changeTab = e -> {
@@ -412,8 +383,6 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 		table.addMouseListener(this);
 
 		// ACTION LISTENER
-		btnLogin.addActionListener(this);
-		btnRegister.addActionListener(this);
 		itemDsNV.addActionListener(this);
 		itemDsP.addActionListener(this);
 		itemCombo.addActionListener(this);
@@ -433,7 +402,7 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 
 		// KEY LISTENER
 		txtSearch.addKeyListener(this);
-		
+
 		// FOCUS LISTENER
 		txtSearch.addFocusListener(this);
 
@@ -444,6 +413,84 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 
 	}
 
+// ======================= VẼ LẠI PANEL USER ĐĂNG NHẬP / ĐĂNG KÝ =======================
+
+	private void updateUserPanel() {
+		// Xóa mọi thứ cũ trong panel
+		userPanel.removeAll();
+
+		if (isLoggedIn) {
+			JLabel userIcon = new JLabel(new ImageIcon(getClass().getResource("/Image/user.png")));
+			// SỬA DÙNG 'loggedInUsername' thay vì 'tk' (vì tk bị null)
+			JLabel userName = new JLabel("Xin chào " + loggedInUsername);
+			userName.setFont(new Font("Roboto", Font.BOLD, 14));
+			userName.setForeground(Color.WHITE);
+
+			userPanel.add(userIcon);
+			userPanel.add(userName);
+
+			// Thêm nút Đăng xuất
+			JButton btnLogout = new JButton("Đăng xuất");
+			btnLogout.setFont(new Font("Roboto", Font.BOLD, 13));
+			btnLogout.setFocusPainted(false);
+			btnLogout.setBackground(Color.GRAY);
+			btnLogout.setForeground(Color.WHITE);
+			btnLogout.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+			btnLogout.addActionListener(e -> {
+				// Xử lý đăng xuất
+				this.isLoggedIn = false;
+				this.loggedInUsername = "";
+				updateUserPanel(); // Vẽ lại panel (hiện nút Đăng nhập)
+
+				// Tùy chọn: gọi listener để quay về màn hình đăng nhập
+				// if(listener != null) {
+				// listener.onShowLogin();
+				// this.dispose();
+				// }
+			});
+			userPanel.add(btnLogout);
+
+		} else {
+			JLabel userIcon = new JLabel(new ImageIcon(getClass().getResource("/Image/user.png")));
+			btnLogin = new JButton("Đăng nhập"); // Khởi tạo lại
+			btnRegister = new JButton("Đăng ký"); // Khởi tạo lại
+
+			Font btnFont = new Font("Roboto", Font.BOLD, 13);
+			btnLogin.setFont(btnFont);
+			btnRegister.setFont(btnFont);
+			btnLogin.setFocusPainted(false);
+			btnRegister.setFocusPainted(false);
+
+			btnLogin.setBackground(Color.yellow);
+			btnLogin.setForeground(Color.black);
+			btnRegister.setBackground(Color.yellow);
+			btnRegister.setForeground(Color.black);
+
+			btnLogin.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+			btnRegister.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+			// THÊM LISTENER TẠI ĐÂY (quan trọng)
+			btnLogin.addActionListener(this);
+			btnRegister.addActionListener(this);
+
+			userPanel.add(userIcon);
+			userPanel.add(btnLogin);
+			userPanel.add(btnRegister);
+		}
+
+		// Yêu cầu panel vẽ lại
+		userPanel.revalidate();
+		userPanel.repaint();
+	}
+
+// ======================= LoginSuccess =======================
+
+	public void setLoginSuccess(String username) {
+	    this.isLoggedIn = true;
+	    this.loggedInUsername = username;
+	    
+	    updateUserPanel();
+	}
 // ======================= DANH SÁCH NHÂN VIÊN =======================
 	private JPanel createQuanLyNhanVienPanel() {
 		JPanel mainPanel = new JPanel(new BorderLayout());
@@ -973,16 +1020,17 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 		}
 
 		if (o instanceof MoviePosterPanel) {
-	        MoviePosterPanel clickedPanel = (MoviePosterPanel) o;
-	        SuatChieu selectedSuatChieu = clickedPanel.getSuatChieu();
+			MoviePosterPanel clickedPanel = (MoviePosterPanel) o;
+			SuatChieu selectedSuatChieu = clickedPanel.getSuatChieu();
 
-	        if (selectedSuatChieu != null) { 
-	            new Form_HienThiThongTinPhim(selectedSuatChieu).setVisible(true); 
-	        } else {
-	            JOptionPane.showMessageDialog(this, "Thông tin suất chiếu không hợp lệ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-	        }
-	        return;
-	    }
+			if (selectedSuatChieu != null) {
+				new Form_HienThiThongTinPhim(selectedSuatChieu).setVisible(true);
+			} else {
+				JOptionPane.showMessageDialog(this, "Thông tin suất chiếu không hợp lệ!", "Lỗi",
+						JOptionPane.ERROR_MESSAGE);
+			}
+			return;
+		}
 
 		JMenu clicked = (JMenu) e.getSource();
 
@@ -1008,36 +1056,32 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-	    if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-	        if (e.getSource() == txtSearch) {
-	            String tuKhoa = txtSearch.getText().trim();
-	            List<Phim> ketQua = dsPhim.timPhimTheoTenGanDung(tuKhoa);
+		if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+			if (e.getSource() == txtSearch) {
+				String tuKhoa = txtSearch.getText().trim();
+				List<Phim> ketQua = dsPhim.timPhimTheoTenGanDung(tuKhoa);
 
-	            if (ketQua.isEmpty()) {
-	                JOptionPane.showMessageDialog(null, "Không tìm thấy phim nào có tên chứa: " + tuKhoa);
-	            } else {
-	                pMovieRow.removeAll();
-	                
-	                PhongChieu mockPhongChieu = new PhongChieu("P000", true, null); 
-	                
-	                for (Phim p : ketQua) {
-	                    SuatChieu mockSuatChieu = new SuatChieu(
-	                        "SC_SEARCH_" + p.getMaPhim(), 
-	                        java.time.LocalDateTime.now(), 
-	                        p, 
-	                        mockPhongChieu
-	                    );
-	                    
-	                    MoviePosterPanel moviePanel = new MoviePosterPanel(mockSuatChieu);
-	                    moviePanel.addMouseListener(this);
-	                    pMovieRow.add(moviePanel);
-	                }
-	                
-	                pMovieRow.revalidate();
-	                pMovieRow.repaint();
-	            }
-	        }
-	    }
+				if (ketQua.isEmpty()) {
+					JOptionPane.showMessageDialog(null, "Không tìm thấy phim nào có tên chứa: " + tuKhoa);
+				} else {
+					pMovieRow.removeAll();
+
+					PhongChieu mockPhongChieu = new PhongChieu("P000", true, null);
+
+					for (Phim p : ketQua) {
+						SuatChieu mockSuatChieu = new SuatChieu("SC_SEARCH_" + p.getMaPhim(),
+								java.time.LocalDateTime.now(), p, mockPhongChieu);
+
+						MoviePosterPanel moviePanel = new MoviePosterPanel(mockSuatChieu);
+						moviePanel.addMouseListener(this);
+						pMovieRow.add(moviePanel);
+					}
+
+					pMovieRow.revalidate();
+					pMovieRow.repaint();
+				}
+			}
+		}
 	}
 
 	@Override
@@ -1069,7 +1113,7 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 		// TODO Auto-generated method stub
 
 	}
-	
+
 	@Override
 	public void focusGained(FocusEvent e) {
 		if (txtSearch.getText().equals("  Tìm kiếm...")) {
@@ -1088,18 +1132,19 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 	public void actionPerformed(ActionEvent e) {
 		Object o = e.getSource();
 		if (o.equals(btnLogin)) {
-			Form_DangNhap form = new Form_DangNhap((username, password) -> {
-				if (username.equals("Nhật Tiến") && password.equals("123")) {
-					JOptionPane.showMessageDialog(this, "Đăng nhập thành công!");
-					return;
-				} else {
-					JOptionPane.showMessageDialog(this, "Sai tài khoản hoặc mật khẩu!");
-				}
-			});
-			form.setVisible(true);
-		} else if (o.equals(btnRegister)) {
-			new Form_DangKy().setVisible(true);
-		} else if (o.equals(itemDsNV)) {
+	        if(listener != null) {
+	            // Yêu cầu controller hiển thị Form_DangNhap
+	            listener.onShowLogin(); 
+	            this.dispose(); // Đóng GiaoDienChinh (nếu cần)
+	        }
+
+	    } else if (o.equals(btnRegister)) {
+	        if(listener != null) {
+	            // Yêu cầu controller hiển thị Form_DangKy
+	            listener.onRegisterRequest();
+	            this.dispose(); 
+	        }
+	    } else if (o.equals(itemDsNV)) {
 			centerCardLayout.show(contentPanel, "QuanLyNhanVien");
 		} else if (o.equals(itemDsP)) {
 			centerCardLayout.show(contentPanel, "QuanLyPhim");
@@ -1254,7 +1299,7 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 			modelCombo
 					.addRow(new Object[] { c.getMaCombo(), c.getTenCombo(), c.getGia(), c.getSoLuong(), c.getPath() });
 			JOptionPane.showMessageDialog(this, "Thêm combo thành công!");
-			if (formCombo != null) 
+			if (formCombo != null)
 				formCombo.reloadComboList();
 		} else {
 			JOptionPane.showMessageDialog(this, "Không thể thêm combo!");
@@ -1531,7 +1576,5 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 			}
 		}
 	}
-	
-	
 
 }

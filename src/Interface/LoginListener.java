@@ -1,5 +1,7 @@
 package Interface;
 
 public interface LoginListener {
-	void onLoginSuccess(String username, String password);
+    boolean onLoginAttempt(String username, String password);
+    void onRegisterRequest();
+    void onShowLogin();
 }

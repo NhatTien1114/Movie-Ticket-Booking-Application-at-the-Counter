@@ -21,6 +21,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import javax.swing.JTextField;
+
+import Interface.LoginListener;
+
 import javax.swing.JButton;
 
 public class Form_DangKy extends JFrame implements ActionListener, MouseListener {
@@ -32,6 +35,7 @@ public class Form_DangKy extends JFrame implements ActionListener, MouseListener
 	private JTextField txtSdt;
 	private JTextField txtHoVaTen;
 	private JButton btnDangKy;
+	private LoginListener listener;
 
 	/**
 	 * Launch the application.
@@ -52,7 +56,8 @@ public class Form_DangKy extends JFrame implements ActionListener, MouseListener
 	/**
 	 * Create the frame.
 	 */
-	public Form_DangKy() {
+	public Form_DangKy(LoginListener listener) {
+		this.listener = listener;
 		Color primary = new Color(26, 26, 46);
 		Color accent = new Color(233, 69, 96);
 		Color hoverColor = accent.brighter();
@@ -253,10 +258,11 @@ public class Form_DangKy extends JFrame implements ActionListener, MouseListener
 			}
 
 			JOptionPane.showMessageDialog(this, "Đăng ký thành công!");
+			if (listener != null) {
+                listener.onShowLogin(); // Yêu cầu controller mở lại form đăng nhập
+            }
+            dispose();
 		}
-		new Form_DangNhap(null).setVisible(true);
-		dispose();
-
 	}
 
 	private void setLabelColor(Container container, Color color) {
