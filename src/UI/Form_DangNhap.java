@@ -25,7 +25,7 @@ import Interface.LoginListener;
 
 import javax.swing.JButton;
 
-public class Form_DangNhap extends JFrame implements ActionListener, MouseListener {
+public class Form_DangNhap extends JFrame implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
 	private JTextField txtTaiKhoan;
@@ -33,25 +33,7 @@ public class Form_DangNhap extends JFrame implements ActionListener, MouseListen
 	private JButton btnDangKy;
 	private JButton btnDangNhap;
 	private LoginListener listener;
-	/**
-	 * Launch the application.
-	 */
-//	public static void main(String[] args) {
-//		EventQueue.invokeLater(new Runnable() {
-//			public void run() {
-//				try {
-//					Form_DangNhap frame = new Form_DangNhap();
-//					frame.setVisible(true);
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//				}
-//			}
-//		});
-//	}
 
-	/**
-	 * Create the frame.
-	 */
 	public Form_DangNhap(LoginListener listener) {
 		this.listener = listener;
 		Color primary = new Color(26, 26, 46);
@@ -145,58 +127,25 @@ public class Form_DangNhap extends JFrame implements ActionListener, MouseListen
 	}
 
 	@Override
-	public void mouseClicked(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void actionPerformed(ActionEvent e) {
 		Object o = e.getSource();
 
 		if (o.equals(btnDangKy)) {
-			// Thay vì tạo mới, hãy gọi listener
 			if (listener != null) {
 				listener.onRegisterRequest();
 			}
-			dispose(); // Tự đóng
+			dispose(); 
 
-		} else if (o.equals(btnDangNhap)) { // <--- ĐÃ ĐƯA RA NGOÀI
+		} else if (o.equals(btnDangNhap)) { 
 			String user = txtTaiKhoan.getText();
 			String pass = new String(txtMatKhau.getPassword());
 
 			if (listener != null) {
-				// Sửa ở đây: Gọi onLoginAttempt
 				boolean loginSuccess = listener.onLoginAttempt(user, pass);
 
 				if (loginSuccess) {
-					dispose(); // Đăng nhập đúng -> tự đóng
+					dispose(); 
 				} else {
-					// Đăng nhập sai -> báo lỗi và không đóng
 					JOptionPane.showMessageDialog(this, "Tên đăng nhập hoặc mật khẩu không đúng!", "Lỗi Đăng Nhập",
 							JOptionPane.ERROR_MESSAGE);
 				}
