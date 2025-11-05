@@ -9,9 +9,12 @@ public class ConnectDB {
 
     public static Connection getConnection() {
     	try {
-            
+    		
             if (conn == null || conn.isClosed()) {
-            	String url = "jdbc:sqlserver://localhost:1433;databaseName=QLBanVe;encrypt=false;";
+            	String url = "jdbc:sqlserver://localhost\\SQLEXPRESS:1433;"
+                        + "databaseName=QLBanVe;"
+                        + "encrypt=false;"
+                        + "trustServerCertificate=true;";
                 String user = "sa";
                 String pass = "123";
                 conn = DriverManager.getConnection(url, user, pass);

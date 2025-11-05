@@ -2,13 +2,31 @@ package Entity;
 
 import java.util.ArrayList;
 import java.util.List;
+import dao.Phim_DAO;
 
 public class DanhSachPhim {
 	private List<Phim> dsPhim;
+	private Phim_DAO phim_dao;
 
 	public DanhSachPhim() {
-		dsPhim = new ArrayList<Phim>();
-		khoiTaoDuLieuDemo();
+		phim_dao = new Phim_DAO(); 
+		dsPhim = phim_dao.getAllPhim(); 
+
+		if (dsPhim == null || dsPhim.isEmpty()) {
+			System.out.println("--- CSDL Phim đang trống. Khởi tạo dữ liệu demo...");
+			
+			dsPhim = new ArrayList<Phim>();
+			
+			khoiTaoDuLieuDemo(); 
+			
+			for (Phim p : dsPhim) {
+				phim_dao.insert(p);
+			}
+			System.out.println("--- Đã thêm " + dsPhim.size() + " phim demo vào CSDL.");
+			
+		} else {
+			System.out.println("--- Đã tải thành công " + dsPhim.size() + " phim từ CSDL.");
+		}
 	}
 
 	public List<Phim> getDsPhim() {
@@ -23,44 +41,51 @@ public class DanhSachPhim {
 		if (dsPhim.contains(phim)) {
 			return false;
 		}
-		dsPhim.add(phim);
-		return true;
+		if (phim_dao.insert(phim)) { 
+			dsPhim.add(phim); 
+			return true;
+		}
+		return false;
 	}
 	
 	public boolean xoaPhim(Phim phim) {
 		if (!dsPhim.contains(phim))
 			return false;
-		dsPhim.remove(phim);
-		return true;
+		
+		if (phim_dao.delete(phim.getMaPhim())) { 
+			dsPhim.remove(phim);
+			return true;
+		}
+		return false;
 	}
 	
 	
 	
 	public boolean capNhatPhim(Phim phimMoi) {
-	    for (Phim phimCu : dsPhim) {
-	        if (phimCu.getMaPhim().equalsIgnoreCase(phimMoi.getMaPhim())) {
+	    if (phim_dao.update(phimMoi)) { 
+			for (Phim phimCu : dsPhim) {
+				if (phimCu.getMaPhim().equalsIgnoreCase(phimMoi.getMaPhim())) {
 
-	            if (phimMoi.getTenPhim() != null && !phimMoi.getTenPhim().trim().isEmpty()) {
-	                phimCu.setTenPhim(phimMoi.getTenPhim());
-	            }
+					if (phimMoi.getTenPhim() != null && !phimMoi.getTenPhim().trim().isEmpty()) {
+						phimCu.setTenPhim(phimMoi.getTenPhim());
+					}
+					if (phimMoi.getTheLoai() != null) {
+						phimCu.setTheLoai(phimMoi.getTheLoai());
+					}
+					if (phimMoi.getThoiLuong() > 0) {
+						phimCu.setThoiLuong(phimMoi.getThoiLuong());
+					}
+					if (phimMoi.getDaoDien() != null && !phimMoi.getDaoDien().trim().isEmpty()) {
+						phimCu.setDaoDien(phimMoi.getDaoDien());
+					}
+					phimCu.setTrangThai(phimMoi.isTrangThai());
+					phimCu.setMoTa(phimMoi.getMoTa()); 
+					phimCu.setDuongDanAnh(phimMoi.getDuongDanAnh());
 
-	            if (phimMoi.getTheLoai() != null) {
-	                phimCu.setTheLoai(phimMoi.getTheLoai());
-	            }
-
-	            if (phimMoi.getThoiLuong() > 0) {
-	                phimCu.setThoiLuong(phimMoi.getThoiLuong());
-	            }
-
-	            if (phimMoi.getDaoDien() != null && !phimMoi.getDaoDien().trim().isEmpty()) {
-	                phimCu.setDaoDien(phimMoi.getDaoDien());
-	            }
-
-	            phimCu.setTrangThai(phimMoi.isTrangThai());
-
-	            return true; 
-	        }
-	    }
+					return true; 
+				}
+			}
+		}
 	    return false; 
 	}
 	
@@ -84,14 +109,13 @@ public class DanhSachPhim {
 	}
 
 	
-	public List<Phim> timPhimTheoMa(String maPhim) {
-	    List<Phim> ketQua = new ArrayList<>();
+	public Phim timPhimTheoMa(String maPhim) {
 	    for (Phim phim : dsPhim) {
-	        if (phim.getMaPhim().toLowerCase().contains(maPhim.toLowerCase())) {
-	            ketQua.add(phim);
+	        if (phim.getMaPhim().equalsIgnoreCase(maPhim)) {
+	            return phim;
 	        }
 	    }
-	    return ketQua;
+	    return null;
 	}
 	
 	public int getSize() {

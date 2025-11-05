@@ -107,7 +107,9 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 
 	private TaiKhoan tk;
 
-	private Form_ChonCombo formCombo; // Khai báo ở đầu class
+	private Runnable capNhatPhimUI;
+	
+	private Form_ChonCombo formCombo; 
 	private JMenuBar menuBar;
 	private JPanel userPanel;
 
@@ -291,7 +293,7 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 		pMovieRow.setBorder(BorderFactory.createEmptyBorder(10, 10, 30, 10));
 
 // HÀM KHI BẤM VÀO TÙY CHỌN ĐANG CHIẾU | SẮP RA MẮT | TẤT CẢ
-		Runnable capNhatPhim = () -> {
+		capNhatPhimUI = () -> {
 			pMovieRow.removeAll();
 
 			List<Phim> danhSachPhimHienThi = dsPhim.getDsPhim();
@@ -336,7 +338,7 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 			clicked.setBackground(Color.WHITE);
 			clicked.setForeground(primary);
 
-			capNhatPhim.run();
+			capNhatPhimUI.run();
 		};
 
 		for (JButton btn : buttons) {
@@ -345,7 +347,7 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 
 		btnTatCa.setBackground(Color.WHITE);
 		btnTatCa.setForeground(primary);
-		capNhatPhim.run();
+		capNhatPhimUI.run();
 
 		pHeader.add(btnTatCa);
 		pHeader.add(btnDangChieu);
@@ -750,7 +752,6 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 
 		txtPathAnh = new JTextField();
 		txtPathAnh.setFont(new Font("Roboto", Font.PLAIN, 16));
-		txtPathAnh.setEditable(false);
 		b8.add(txtPathAnh);
 
 		btnChonAnh = new JButton("Chọn Ảnh");
@@ -1156,14 +1157,6 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 			xoaNhanVien();
 		} else if (o.equals(btnCapNhatNhanVien)) {
 			capNhatNhanVien();
-		} else if (o.equals(btnTimPhim)) {
-			timTheoTenNhanVien();
-		} else if (o.equals(btnXoaPhim)) {
-			xoaNhanVien();
-		} else if (o.equals(btnCapNhatPhim)) {
-			capNhatNhanVien();
-		} else if (o.equals(btnThemPhim)) {
-			capNhatNhanVien();
 		} else if (o.equals(btnChonAnh)) {
 			JFileChooser fileChooser = new JFileChooser();
 			fileChooser.setDialogTitle("Chọn ảnh poster phim");
@@ -1209,20 +1202,22 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 	}
 
 	public boolean kiemTraDuLieuPhim() {
-		if (txtMaPhim.getText().trim().isEmpty() || txtTenPhim.getText().trim().isEmpty()
-				|| txtTheLoai.getText().trim().isEmpty() || txtThoiLuong.getText().trim().isEmpty()
-				|| txtDaoDien.getText().trim().isEmpty() || txtTrangThai.getText().trim().isEmpty()) {
-			JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!");
-			return false;
-		}
+	    if (txtMaPhim.getText().trim().isEmpty() || txtTenPhim.getText().trim().isEmpty()
+	            || txtTheLoai.getText().trim().isEmpty() || txtThoiLuong.getText().trim().isEmpty()
+	            || txtDaoDien.getText().trim().isEmpty() || txtTrangThai.getText().trim().isEmpty()
+	            || txtMoTa.getText().trim().isEmpty() || txtPathAnh.getText().trim().isEmpty()) { 
+	        
+	        JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!");
+	        return false;
+	    }
 
-		try {
-			Integer.parseInt(txtThoiLuong.getText().trim());
-		} catch (NumberFormatException e) {
-			JOptionPane.showMessageDialog(this, "Thời lượng phải là số!");
-			return false;
-		}
-		return true;
+	    try {
+	        Integer.parseInt(txtThoiLuong.getText().trim());
+	    } catch (NumberFormatException e) {
+	        JOptionPane.showMessageDialog(this, "Thời lượng phải là số!");
+	        return false;
+	    }
+	    return true;
 	}
 
 	private boolean kiemTraDuLieuCombo() {
@@ -1245,21 +1240,23 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 	}
 
 	public Phim chuyenDuLieuVaoPhim() {
-		String ma = txtMaPhim.getText().trim();
-		String ten = txtTenPhim.getText().trim();
-		Phim.TheLoai theLoai = Phim.TheLoai.fromString(txtTheLoai.getText().trim());
-		if (theLoai == null) {
-			JOptionPane.showMessageDialog(this, "Thể loại không hợp lệ! (Ví dụ: Tình Cảm, Kinh Dị, Hành Động...)");
-			return null;
-		}
-		int thoiLuong = Integer.parseInt(txtThoiLuong.getText().trim());
-		String daoDien = txtDaoDien.getText().trim();
-		boolean trangThai = txtTrangThai.getText().trim().equalsIgnoreCase("true")
-				|| txtTrangThai.getText().trim().equalsIgnoreCase("đang chiếu");
-		String moTa = txtMoTa.getText().trim();
-		String path = txtPathAnh.getText().trim();
+	    String ma = txtMaPhim.getText().trim();
+	    String ten = txtTenPhim.getText().trim();
+	    Phim.TheLoai theLoai = Phim.TheLoai.fromString(txtTheLoai.getText().trim());
+	    
+	    if (theLoai == null) {
+	        JOptionPane.showMessageDialog(this, "Thể loại không hợp lệ! (Ví dụ: Tình Cảm, Kinh Dị, Hành Động...)");
+	        return null;
+	    }
+	    
+	    int thoiLuong = Integer.parseInt(txtThoiLuong.getText().trim());
+	    String daoDien = txtDaoDien.getText().trim();
+	    boolean trangThai = txtTrangThai.getText().trim().equalsIgnoreCase("true")
+	            || txtTrangThai.getText().trim().equalsIgnoreCase("đang chiếu");
+	    String moTa = txtMoTa.getText().trim();
+	    String path = txtPathAnh.getText().trim();
 
-		return new Phim(ma, ten, theLoai, thoiLuong, daoDien, trangThai, moTa, path);
+	    return new Phim(ma, ten, theLoai, thoiLuong, daoDien, trangThai, moTa, path);
 	}
 
 	private ComboDoAn chuyenDuLieuVaoCombo() {
@@ -1307,35 +1304,68 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 	}
 
 	private void themPhim() {
-		if (!kiemTraDuLieuPhim())
-			return;
+	    if (!kiemTraDuLieuPhim())
+	        return;
 
-		Phim p = chuyenDuLieuVaoPhim();
-		if (dsPhim.timPhimTheoMa(p.getMaPhim()) != null) {
-			JOptionPane.showMessageDialog(this, "Mã phim đã tồn tại!");
-			return;
-		}
+	    Phim p = chuyenDuLieuVaoPhim();
+	    if (p == null) {
+	        return; 
+	    }
 
-		dsPhim.themPhim(p);
-		modelPhim.addRow(new Object[] { p.getMaPhim(), p.getTenPhim(), p.getTheLoai(), p.getThoiLuong(), p.getDaoDien(),
-				p.isTrangThai() });
+	    if (dsPhim.timPhimTheoMa(p.getMaPhim()) != null) {
+	        JOptionPane.showMessageDialog(this, "Mã phim đã tồn tại!");
+	        return;
+	    }
 
-		JOptionPane.showMessageDialog(this, "Thêm phim thành công!");
+	    if (dsPhim.themPhim(p)) {
+	        modelPhim.addRow(new Object[] { 
+	                p.getMaPhim(), p.getTenPhim(), p.getTheLoai(),
+	                p.getThoiLuong(), p.getDaoDien(), 
+	                p.isTrangThai() ? "Đang chiếu" : "Sắp ra mắt", 
+	                p.getMoTa(), 
+	                p.getDuongDanAnh() 
+	        });
+	        
+	        JOptionPane.showMessageDialog(this, "Thêm phim thành công!");
+	        
+	        capNhatPhimUI.run();
+	        
+	    } else {
+	        JOptionPane.showMessageDialog(this, "Thêm phim vào CSDL thất bại!");
+	    }
 	}
 
 	private void xoaPhim() {
-		int row = tablePhim.getSelectedRow();
-		if (row == -1) {
-			JOptionPane.showMessageDialog(this, "Vui lòng chọn phim cần xóa!");
-			return;
-		}
+	    int row = tablePhim.getSelectedRow();
+	    if (row == -1) {
+	        JOptionPane.showMessageDialog(this, "Vui lòng chọn phim cần xóa!");
+	        return;
+	    }
+	    int choice = JOptionPane.showConfirmDialog(this, 
+	            "Bạn có chắc chắn muốn xóa phim này?", 
+	            "Xác nhận xóa",
+	            JOptionPane.YES_NO_OPTION);
 
-		String ma = modelPhim.getValueAt(row, 0).toString();
-		Phim phim = new Phim(ma);
-		dsPhim.xoaPhim(phim);
-		modelPhim.removeRow(row);
+	    if (choice == JOptionPane.YES_OPTION) {
+	        String ma = modelPhim.getValueAt(row, 0).toString();
 
-		JOptionPane.showMessageDialog(this, "Xóa phim thành công!");
+	        Phim phimCanXoa = dsPhim.timPhimTheoMa(ma); 
+
+	        if (phimCanXoa == null) {
+	            JOptionPane.showMessageDialog(this, "Không tìm thấy phim để xóa!");
+	            return;
+	        }
+
+	        if (dsPhim.xoaPhim(phimCanXoa)) {
+	            modelPhim.removeRow(row);
+	            JOptionPane.showMessageDialog(this, "Xóa phim thành công!");
+	            
+	            capNhatPhimUI.run(); 
+	            
+	        } else {
+	            JOptionPane.showMessageDialog(this, "Xóa phim khỏi CSDL thất bại!");
+	        }
+	    }
 	}
 
 	private void xoaCombo() {
@@ -1357,24 +1387,37 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 	}
 
 	private void capNhatPhim() {
-		int row = tablePhim.getSelectedRow();
-		if (row == -1) {
-			JOptionPane.showMessageDialog(this, "Vui lòng chọn phim cần cập nhật!");
-			return;
-		}
+	    int row = tablePhim.getSelectedRow();
+	    if (row == -1) {
+	        JOptionPane.showMessageDialog(this, "Vui lòng chọn phim cần cập nhật!");
+	        return;
+	    }
 
-		if (!kiemTraDuLieuPhim())
-			return;
-		Phim p = chuyenDuLieuVaoPhim();
-		dsPhim.capNhatPhim(p);
+	    if (!kiemTraDuLieuPhim())
+	        return;
 
-		modelPhim.setValueAt(p.getTenPhim(), row, 1);
-		modelPhim.setValueAt(p.getTheLoai(), row, 2);
-		modelPhim.setValueAt(p.getThoiLuong(), row, 3);
-		modelPhim.setValueAt(p.getDaoDien(), row, 4);
-		modelPhim.setValueAt(p.isTrangThai(), row, 5);
+	    Phim p = chuyenDuLieuVaoPhim();
 
-		JOptionPane.showMessageDialog(this, "Cập nhật phim thành công!");
+	    if (p == null) {
+	        return;
+	    }
+
+	    if (dsPhim.capNhatPhim(p)) {
+	        modelPhim.setValueAt(p.getTenPhim(), row, 1);
+	        modelPhim.setValueAt(p.getTheLoai(), row, 2);
+	        modelPhim.setValueAt(p.getThoiLuong(), row, 3);
+	        modelPhim.setValueAt(p.getDaoDien(), row, 4);
+	        modelPhim.setValueAt(p.isTrangThai() ? "Đang chiếu" : "Sắp ra mắt", row, 5);
+	        modelPhim.setValueAt(p.getMoTa(), row, 6);
+	        modelPhim.setValueAt(p.getDuongDanAnh(), row, 7); 
+
+	        JOptionPane.showMessageDialog(this, "Cập nhật phim thành công!");
+	        
+	        capNhatPhimUI.run(); 
+	        
+	    } else {
+	        JOptionPane.showMessageDialog(this, "Cập nhật phim CSDL thất bại!");
+	    }
 	}
 
 	private void capNhatCombo() {
@@ -1392,7 +1435,6 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 			return;
 
 		if (dsCombo.capNhatCombo(c)) {
-			// Cập nhật hiển thị trên bảng
 			modelCombo.setValueAt(c.getTenCombo(), row, 1);
 			modelCombo.setValueAt(c.getGia(), row, 2);
 			modelCombo.setValueAt(c.getSoLuong(), row, 3);
