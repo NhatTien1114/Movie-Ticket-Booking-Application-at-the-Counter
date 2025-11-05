@@ -7,20 +7,17 @@ public class HoaDon {
 	private String maHoaDon;
 	private LocalDateTime ngayLap;
 	private List<ChiTietHoaDon> chiTiet;
-	private double maGiamGia;
-	private boolean trangThaiThanhToan;
+	private KhachHang khachHang;
 
 	public HoaDon() {
 	}
 
-	public HoaDon(String maHoaDon, LocalDateTime ngayLap,  List<ChiTietHoaDon> chiTiet,
-			double maGiamGia, boolean trangThaiThanhToan) {
+	public HoaDon(String maHoaDon, LocalDateTime ngayLap, List<ChiTietHoaDon> chiTiet, KhachHang khachHang) {
 		super();
 		this.maHoaDon = maHoaDon;
 		this.ngayLap = ngayLap;
 		this.chiTiet = chiTiet;
-		this.maGiamGia = maGiamGia;
-		this.trangThaiThanhToan = trangThaiThanhToan;
+		this.khachHang = khachHang;
 	}
 
 	public String getMaHoaDon() {
@@ -47,20 +44,12 @@ public class HoaDon {
 		this.chiTiet = chiTiet;
 	}
 
-	public double getMaGiamGia() {
-		return maGiamGia;
+	public KhachHang getKhachHang() {
+		return khachHang;
 	}
 
-	public void setMaGiamGia(double maGiamGia) {
-		this.maGiamGia = maGiamGia;
-	}
-
-	public boolean isTrangThaiThanhToan() {
-		return trangThaiThanhToan;
-	}
-
-	public void setTrangThaiThanhToan(boolean trangThaiThanhToan) {
-		this.trangThaiThanhToan = trangThaiThanhToan;
+	public void setKhachHang(KhachHang khachHang) {
+		this.khachHang = khachHang;
 	}
 
 	public double tinhTongTien() {
@@ -70,10 +59,6 @@ public class HoaDon {
 			for (ChiTietHoaDon cthd : chiTiet) {
 				tong += cthd.tinhThanhTien();
 			}
-		}
-
-		if (maGiamGia > 0 && maGiamGia <= 100) {
-			tong -= tong * (maGiamGia / 100);
 		}
 
 		return tong;
