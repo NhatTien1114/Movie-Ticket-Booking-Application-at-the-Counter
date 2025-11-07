@@ -183,7 +183,7 @@ public class NhanVien_DAO {
 		
 		try {
 			conn = ConnectDB.getConnection();
-			conn.setAutoCommit(false); // Bắt đầu Transaction
+			conn.setAutoCommit(false); 
 
 			// 1. Thêm vào bảng NhanVien
 			psNV = conn.prepareStatement(sqlNhanVien);
@@ -193,14 +193,14 @@ public class NhanVien_DAO {
 
 			// 2. Thêm vào bảng TaiKhoan
 			psTK = conn.prepareStatement(sqlTaiKhoan);
-			psTK.setString(1, nv.getTenDangNhap()); // Giả định NhanVien có getter này
-			psTK.setString(2, nv.getMatKhau());     // Giả định NhanVien có getter này
-			psTK.setString(3, nv.getEmail());       // Giả định NhanVien có getter này
-			psTK.setString(4, nv.getSoDienThoai()); // Giả định NhanVien có getter này
-			psTK.setString(5, nv.getMaNV());      // Khóa ngoại liên kết 2 bảng
+			psTK.setString(1, nv.getTenDangNhap()); 
+			psTK.setString(2, nv.getMatKhau());    
+			psTK.setString(3, nv.getEmail());      
+			psTK.setString(4, nv.getSoDienThoai()); 
+			psTK.setString(5, nv.getMaNV());     
 			int rsTK = psTK.executeUpdate();
 
-			// Nếu cả 2 đều thành công
+			
 			if (rsNV > 0 && rsTK > 0) {
 				conn.commit(); // Hoàn tất Transaction
 				return true;

@@ -507,11 +507,6 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 		JScrollPane srollTable = new JScrollPane(table);
 		srollTable.setPreferredSize(new Dimension(500, 0));
 
-		Object[] rowData = { "NV001", "Nguyễn Văn A", "nva@example.com", "0901234567" };
-		model.addRow(rowData);
-		Object[] rowData2 = { "NV002", "Nguyễn Thị C", "ntc@example.com", "09043234137" };
-		model.addRow(rowData2);
-
 		JPanel pCenterContainer = new JPanel(new BorderLayout());
 		pCenterContainer.setBackground(primary);
 
@@ -1471,6 +1466,30 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 		}
 	}
 
+	public void loadDataFromDAO(List<NhanVien> danhSach) {
+		XoaHetDuLieuTrenModel();
+
+		dsNV.setDsNhanVien(danhSach); 
+
+		for (NhanVien nv : danhSach) {
+			model.addRow(new Object[] { 
+				nv.getMaNV(), 
+				nv.getHoTen(), 
+				nv.getEmail(), 
+				nv.getSoDienThoai() 
+			});
+		}
+	}
+	
+	public void themNhanVienVaoBang(NhanVien nv) {
+		model.addRow(new Object[] { 
+			nv.getMaNV(), 
+			nv.getHoTen(), 
+			nv.getEmail(), 
+			nv.getSoDienThoai() 
+		});
+	}
+	
 	public void timTheoTenNhanVien() {
 		String tenTim = txtTim.getText().trim();
 		if (tenTim != null) {
