@@ -4,7 +4,9 @@ import java.awt.EventQueue;
 import javax.swing.UIManager;
 import com.formdev.flatlaf.FlatDarkLaf;
 
+import Entity.NhanVien;
 import UI.Form_GiaoDienChinh;
+import dao.NhanVien_DAO;
 import UI.Form_DangKy;
 import UI.Form_DangNhap;
 import Interface.LoginListener;
@@ -14,6 +16,7 @@ public class Test implements LoginListener {
 	private Form_GiaoDienChinh mainFrame;
 	private Form_DangNhap loginFrame;
 	private Form_DangKy registerFrame;
+	private NhanVien_DAO nhanVienDAO;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -29,6 +32,7 @@ public class Test implements LoginListener {
 	}
 
 	public void start() {
+		nhanVienDAO = new NhanVien_DAO();
 		mainFrame = new Form_GiaoDienChinh(this); 
 		mainFrame.setVisible(false);
 
@@ -38,16 +42,28 @@ public class Test implements LoginListener {
 
 	@Override
 	public boolean onLoginAttempt(String username, String password) {
+		// Giữ lại tài khoản admin gốc
 		if ("admin_Tien".equals(username) && "123".equals(password)) {
 			mainFrame.setLoginSuccess(username);
 			mainFrame.setVisible(true);
 			return true;
 		}
+		NhanVien nv = nhanVienDAO.getNhanVienByTenDangNhap(username);
 		
-		// TODO: Thêm logic kiểm tra tài khoản từ database (đã đăng ký)
-		// ...
+		if (nv != null && nv.getMatKhau().equals(password)) {
+			mainFrame.setLoginSuccess(nv.getHoTen()); 
+			mainFrame.setVisible(true);
+			return true;
+		}
 
-		// Đăng nhập thất bại
+		return false;
+	}
+	
+	@Override
+	public boolean onRegisterAttempt(NhanVien nv) {
+		if (nhanVienDAO != null) {
+			return nhanVienDAO.insert(nv); 
+		}
 		return false;
 	}
 

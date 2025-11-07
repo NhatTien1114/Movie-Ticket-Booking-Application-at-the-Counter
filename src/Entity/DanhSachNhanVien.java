@@ -25,19 +25,19 @@ public class DanhSachNhanVien {
 		return true;
 	}
 
-	public NhanVien timNhanVien(String tenNV) {
-		for (NhanVien nv : dsNhanVien) {
-			if (nv.getHoTen().equalsIgnoreCase(tenNV)) {
-				return nv;
-			}
-		}
-		return null;
+	public NhanVien timNhanVien(String maNV) {
+	    for (NhanVien nv : dsNhanVien) {
+	        if (nv.getMaNV().equalsIgnoreCase(maNV)) {
+	            return nv;
+	        }
+	    }
+	    return null;
 	}
 
 	public boolean capNhatNhanVien(NhanVien nvMoi) {
-		NhanVien nvCu = timNhanVien(nvMoi.getMaNV());
-		if (nvCu == null)
-			return false;
+		NhanVien nvCu = timNhanVien(nvMoi.getMaNV()); 
+	    if (nvCu == null)
+	        return false;
 
 		if (nvMoi.getHoTen() != null && !nvMoi.getHoTen().trim().isEmpty())
 			nvCu.setHoTen(nvMoi.getHoTen());

@@ -6,8 +6,8 @@ public class NhanVien extends TaiKhoan {
 	private String maNV;
 	private String hoTen;
 
-	public NhanVien(String tenDangNhap, String matKhau, String email, String soDienThoai, String maNV, String hoTen) {
-		super(tenDangNhap, matKhau, email, soDienThoai);
+	public NhanVien(String maNV, String hoTen, String tenDangNhap, String matKhau, String email, String soDienThoai) {
+		super(tenDangNhap, matKhau, email, soDienThoai); 
 		this.maNV = maNV;
 		this.hoTen = hoTen;
 	}
@@ -36,19 +36,19 @@ public class NhanVien extends TaiKhoan {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(hoTen);
+	    return Objects.hash(maNV); 
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		NhanVien other = (NhanVien) obj;
-		return Objects.equals(hoTen, other.hoTen);
+	    if (this == obj)
+	        return true;
+	    if (obj == null)
+	        return false;
+	    if (getClass() != obj.getClass())
+	        return false;
+	    NhanVien other = (NhanVien) obj;
+	    return Objects.equals(maNV, other.maNV); 
 	}
 
 }

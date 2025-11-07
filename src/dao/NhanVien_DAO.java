@@ -115,15 +115,121 @@ public class NhanVien_DAO {
         }
         return ds;
     }
+	
+	public NhanVien getNhanVienByTenDangNhap(String tenDN) {
+		NhanVien nv = null;
+		String sql = """
+				SELECT nv.maNV, nv.hoTen, tk.tenDangNhap, tk.matKhau, tk.email, tk.soDienThoai
+				FROM NhanVien nv
+				JOIN TaiKhoan tk ON nv.maNV = tk.maNV
+				WHERE tk.tenDangNhap = ?
+			""";
+		try (Connection conn = ConnectDB.getConnection();
+			 PreparedStatement ps = conn.prepareStatement(sql)) {
+			
+			ps.setString(1, tenDN);
+			ResultSet rs = ps.executeQuery();
+
+			if (rs.next()) {
+				String maNV = rs.getString("maNV");
+				String hoTen = rs.getString("hoTen");
+				String tenDangNhap = rs.getString("tenDangNhap");
+				String matKhau = rs.getString("matKhau");
+				String email = rs.getString("email");
+				String soDienThoai = rs.getString("soDienThoai");
+				nv = new NhanVien(maNV, hoTen, tenDangNhap, matKhau, email, soDienThoai);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return nv;
+	}
+	
+	public boolean checkTaiKhoanTonTai(String tenDN) {
+		String sql = "SELECT 1 FROM TaiKhoan WHERE tenDangNhap = ?";
+		try (Connection conn = ConnectDB.getConnection();
+			 PreparedStatement ps = conn.prepareStatement(sql)) {
+			ps.setString(1, tenDN);
+			try (ResultSet rs = ps.executeQuery()) {
+				return rs.next(); // True nếu đã tồn tại
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return true; // Mặc định là có lỗi thì không cho đăng ký
+		}
+	}
+	
+	public int getSoLuongNhanVien() {
+		String sql = "SELECT COUNT(*) FROM NhanVien";
+		try (Connection conn = ConnectDB.getConnection();
+			 PreparedStatement ps = conn.prepareStatement(sql);
+			 ResultSet rs = ps.executeQuery()) {
+			if (rs.next()) {
+				return rs.getInt(1);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
 	 	
-    public boolean insert(NhanVien nv) {
-        String sql = "INSERT INTO NhanVien (maNV, hoTen) VALUES (?, ?)";
-        try (Connection conn = ConnectDB.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, nv.getMaNV());
-            ps.setString(2, nv.getHoTen());
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) { e.printStackTrace(); return false; }
-    }
+	public boolean insert(NhanVien nv) {
+		String sqlNhanVien = "INSERT INTO NhanVien (maNV, hoTen) VALUES (?, ?)";
+		String sqlTaiKhoan = "INSERT INTO TaiKhoan (tenDangNhap, matKhau, email, soDienThoai, maNV) VALUES (?, ?, ?, ?, ?)";
+		
+		Connection conn = null;
+		PreparedStatement psNV = null;
+		PreparedStatement psTK = null;
+		
+		try {
+			conn = ConnectDB.getConnection();
+			conn.setAutoCommit(false); // Bắt đầu Transaction
+
+			// 1. Thêm vào bảng NhanVien
+			psNV = conn.prepareStatement(sqlNhanVien);
+			psNV.setString(1, nv.getMaNV());
+			psNV.setString(2, nv.getHoTen());
+			int rsNV = psNV.executeUpdate();
+
+			// 2. Thêm vào bảng TaiKhoan
+			psTK = conn.prepareStatement(sqlTaiKhoan);
+			psTK.setString(1, nv.getTenDangNhap()); // Giả định NhanVien có getter này
+			psTK.setString(2, nv.getMatKhau());     // Giả định NhanVien có getter này
+			psTK.setString(3, nv.getEmail());       // Giả định NhanVien có getter này
+			psTK.setString(4, nv.getSoDienThoai()); // Giả định NhanVien có getter này
+			psTK.setString(5, nv.getMaNV());      // Khóa ngoại liên kết 2 bảng
+			int rsTK = psTK.executeUpdate();
+
+			// Nếu cả 2 đều thành công
+			if (rsNV > 0 && rsTK > 0) {
+				conn.commit(); // Hoàn tất Transaction
+				return true;
+			} else {
+				conn.rollback(); // Hủy bỏ Transaction
+				return false;
+			}
+
+		} catch (SQLException e) {
+			try {
+				if (conn != null) conn.rollback(); // Hủy bỏ Transaction nếu có lỗi
+			} catch (SQLException e2) {
+				e2.printStackTrace();
+			}
+			e.printStackTrace();
+			return false;
+		} finally {
+			try {
+				if (psNV != null) psNV.close();
+				if (psTK != null) psTK.close();
+				if (conn != null) {
+					conn.setAutoCommit(true); // Thiết lập lại auto-commit
+					conn.close();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 
     public boolean update(NhanVien nv) {
         String sql = "UPDATE NhanVien SET hoTen=? WHERE maNV=?";

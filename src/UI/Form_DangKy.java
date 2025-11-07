@@ -22,7 +22,9 @@ import java.awt.event.MouseListener;
 
 import javax.swing.JTextField;
 
+import Entity.NhanVien;
 import Interface.LoginListener;
+import dao.NhanVien_DAO;
 
 import javax.swing.JButton;
 
@@ -36,28 +38,12 @@ public class Form_DangKy extends JFrame implements ActionListener, MouseListener
 	private JTextField txtHoVaTen;
 	private JButton btnDangKy;
 	private LoginListener listener;
+	private NhanVien_DAO nhanVienDAO;
 
-	/**
-	 * Launch the application.
-	 */
-//	public static void main(String[] args) {
-//		EventQueue.invokeLater(new Runnable() {
-//			public void run() {
-//				try {
-//					Form_DangKy frame = new Form_DangKy();
-//					frame.setVisible(true);
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//				}
-//			}
-//		});
-//	}
-
-	/**
-	 * Create the frame.
-	 */
 	public Form_DangKy(LoginListener listener) {
 		this.listener = listener;
+		this.nhanVienDAO = new NhanVien_DAO();
+
 		Color primary = new Color(26, 26, 46);
 		Color accent = new Color(233, 69, 96);
 		Color hoverColor = accent.brighter();
@@ -257,11 +243,40 @@ public class Form_DangKy extends JFrame implements ActionListener, MouseListener
 				return;
 			}
 
-			JOptionPane.showMessageDialog(this, "Đăng ký thành công!");
+			// ====== LOGIC ĐĂNG KÝ MỚI ======
+
+			// 1. Kiểm tra tài khoản đã tồn tại chưa
+			if (nhanVienDAO.checkTaiKhoanTonTai(username)) {
+				JOptionPane.showMessageDialog(this, "Tên tài khoản đã tồn tại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+				txtTaiKhoan.selectAll();
+				txtTaiKhoan.requestFocus();
+				return;
+			}
+
+			// 2. Tạo mã nhân viên mới (Ví dụ: NV001, NV002...)
+			int soLuongNV = nhanVienDAO.getSoLuongNhanVien() + 1;
+			String maNV = String.format("NV%03d", soLuongNV); 
+
+			// 3. Tạo đối tượng NhanVien
+			NhanVien nvMoi = new NhanVien(maNV, hoTen, username, password, email, sdt);
+
+			// 4. Gọi listener để Controller xử lý việc insert
+			boolean dangKyThanhCong = false;
 			if (listener != null) {
-                listener.onShowLogin(); // Yêu cầu controller mở lại form đăng nhập
-            }
-            dispose();
+				dangKyThanhCong = listener.onRegisterAttempt(nvMoi);
+			}
+
+			// 5. Xử lý kết quả
+			if (dangKyThanhCong) {
+				JOptionPane.showMessageDialog(this, "Đăng ký thành công! Vui lòng đăng nhập.");
+				if (listener != null) {
+					listener.onShowLogin(); // Yêu cầu controller mở lại form đăng nhập
+				}
+				dispose(); 
+			} else {
+				JOptionPane.showMessageDialog(this, "Đã có lỗi xảy ra trong quá trình đăng ký.", "Lỗi",
+						JOptionPane.ERROR_MESSAGE);
+			}
 		}
 	}
 
