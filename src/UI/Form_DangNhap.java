@@ -53,7 +53,7 @@ public class Form_DangNhap extends JFrame implements ActionListener {
 		getContentPane().add(pNorth, BorderLayout.NORTH);
 
 		JLabel lblTitle = new JLabel("ĐĂNG NHẬP");
-		lblTitle.setFont(new Font("Roboto", Font.BOLD, 28));
+		lblTitle.setFont(new Font("Unbounded", Font.BOLD, 28));
 		lblTitle.setForeground(Color.white);
 		pNorth.add(lblTitle);
 		getContentPane().add(pCenter, BorderLayout.CENTER);

@@ -9,7 +9,6 @@ import java.io.File;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 
-// Zxing Core (Phải đảm bảo thư viện này được thêm vào dự án)
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
@@ -21,8 +20,8 @@ public class Form_ThanhToan extends JPanel implements ActionListener {
 	private static final Color primary = new Color(26, 26, 46);
 	private static final Color accent = new Color(233, 69, 96);
 	private static final Color highlight = new Color(180, 100, 255);
-	private static final Font fontTitle = new Font("Poppins", Font.BOLD, 26);
-	private static final Font fontHeader = new Font("Poppins", Font.BOLD, 18);
+	private static final Font fontTitle = new Font("Unbounded", Font.BOLD, 26);
+	private static final Font fontHeader = new Font("Unbounded", Font.BOLD, 18);
 	private static final Font fontText = new Font("Poppins", Font.PLAIN, 14);
 
 	private String qrCodeData;
@@ -33,14 +32,11 @@ public class Form_ThanhToan extends JPanel implements ActionListener {
 	private String time;
 	private String address;
 	private String snackDetails;
-	private String ticketCode; // Mã vé (dùng cho QR chính)
+	private String ticketCode;
 
 	private JButton btnReturnHome, btnDownload;
 	private Runnable onReturnHome;
 
-	/**
-	 * Khởi tạo Form_ThanhToan với 10 tham số.
-	 */
 	public Form_ThanhToan(String qrCodeData, String ticketCode, double totalAmount, String movieName, String seats,
 			String date, String time, String address, String snackDetails, Runnable onReturnHome) {
 		this.qrCodeData = qrCodeData;
@@ -63,12 +59,10 @@ public class Form_ThanhToan extends JPanel implements ActionListener {
 		add(createFooterPanel(), BorderLayout.SOUTH);
 	}
 
-    // === Các phương thức UI (Giữ nguyên) ===
 	private JPanel createHeaderPanel() {
-		// ... (Code tạo header giữ nguyên) ...
 		JPanel panel = new JPanel();
 		panel.setBackground(primary);
-		JLabel lblHeader = new JLabel("YOUR PURCHASE IS SUCCESSFUL!", SwingConstants.CENTER);
+		JLabel lblHeader = new JLabel("THANH TOÁN THÀNH CÔNG!", SwingConstants.CENTER);
 		lblHeader.setFont(fontTitle);
 		lblHeader.setForeground(Color.WHITE);
 		panel.add(lblHeader);
@@ -76,7 +70,6 @@ public class Form_ThanhToan extends JPanel implements ActionListener {
 	}
 
 	private JPanel createContentPanel() {
-		// ... (Code tạo content panel giữ nguyên) ...
 		JPanel panel = new JPanel(new GridLayout(1, 2, 30, 0));
 		panel.setBackground(primary);
 		panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
@@ -88,28 +81,24 @@ public class Form_ThanhToan extends JPanel implements ActionListener {
 	}
 
 	private JPanel createLeftPanel() {
-		// ... (Code tạo panel bên trái giữ nguyên) ...
 		JPanel panel = new JPanel();
 		panel.setBackground(new Color(20, 20, 60));
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		panel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
 
-		// Tiêu đề TICKET
-		JLabel lblTicket = new JLabel("TICKET", SwingConstants.CENTER);
+		JLabel lblTicket = new JLabel("VÉ", SwingConstants.CENTER);
 		lblTicket.setFont(fontHeader);
 		lblTicket.setForeground(Color.WHITE);
 		lblTicket.setAlignmentX(Component.CENTER_ALIGNMENT);
 		panel.add(lblTicket);
 		panel.add(Box.createVerticalStrut(20));
 
-		// Hình ảnh QR Code (Chỉ 1 QR Code)
 		try {
 			ImageIcon qrImage = generateQRCodeImage(ticketCode, 200, 200); 
 			JLabel lblQr = new JLabel(qrImage);
 			lblQr.setAlignmentX(Component.CENTER_ALIGNMENT);
 			panel.add(lblQr);
 			
-			// Mã bên dưới QR
 			JLabel lblTicketCode = new JLabel(ticketCode, SwingConstants.CENTER);
 			lblTicketCode.setFont(fontText.deriveFont(Font.BOLD, 16));
 			lblTicketCode.setForeground(Color.WHITE);
@@ -130,29 +119,26 @@ public class Form_ThanhToan extends JPanel implements ActionListener {
 	}
 
 	private JPanel createRightPanel() {
-		// ... (Code tạo panel bên phải giữ nguyên) ...
 		JPanel panel = new JPanel();
 		panel.setBackground(new Color(20, 20, 60));
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		panel.setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
 
-		JLabel lblTitle = new JLabel("TICKET DETAILS", SwingConstants.LEFT);
+		JLabel lblTitle = new JLabel("CHI TIẾT VÉ", SwingConstants.LEFT);
 		lblTitle.setFont(fontHeader);
 		lblTitle.setForeground(Color.WHITE);
 		lblTitle.setAlignmentX(Component.LEFT_ALIGNMENT);
 		panel.add(lblTitle);
 		panel.add(Box.createVerticalStrut(20));
 
-		// Thêm chi tiết vé
-		addDetail(panel, "Movie:", movieName);
-		addDetail(panel, "Address:", address);
-		addDetail(panel, "Date:", date);
-		addDetail(panel, "Seats:", seats);
-		addDetail(panel, "Snack:", snackDetails);
-		addDetail(panel, "Time:", time);
-		addDetail(panel, "Screen:", "3");
+		addDetail(panel, "Phim:", movieName);
+		addDetail(panel, "Địa Chỉ:", address);
+		addDetail(panel, "Ngày Đặt:", date);
+		addDetail(panel, "Ghế:", seats);
+		addDetail(panel, "Combo:", snackDetails);
+		addDetail(panel, "Thời Gian:", time);
+		addDetail(panel, "Phòng:", "3");
 		
-		// Tổng tiền
 		DecimalFormat df = new DecimalFormat("#,###");
 		addDetail(panel, "Total:", df.format(totalAmount) + " vnd", fontHeader.deriveFont(Font.BOLD, 20), accent);
 
@@ -164,7 +150,6 @@ public class Form_ThanhToan extends JPanel implements ActionListener {
 	}
 	
 	private void addDetail(JPanel parent, String label, String value, Font valueFont, Color valueColor) {
-	    // ... (Code tạo chi tiết giữ nguyên) ...
 	    JPanel detailPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
 	    detailPanel.setOpaque(false);
 	    detailPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -185,12 +170,11 @@ public class Form_ThanhToan extends JPanel implements ActionListener {
 	}
 
 	private JPanel createFooterPanel() {
-		// ... (Code tạo footer giữ nguyên) ...
 		JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
 		panel.setBackground(primary);
 
-		btnReturnHome = createButton("RETURN HOME", highlight);
-		btnDownload = createButton("DOWNLOAD", accent);
+		btnReturnHome = createButton("QUAY LẠI", highlight);
+		btnDownload = createButton("TẢI XUỐNG", accent);
 
 		panel.add(btnReturnHome);
 		panel.add(btnDownload);
@@ -202,7 +186,6 @@ public class Form_ThanhToan extends JPanel implements ActionListener {
 	}
 
 	private JButton createButton(String text, Color bgColor) {
-		// ... (Code tạo button giữ nguyên) ...
 		JButton btn = new JButton(text);
 		btn.setPreferredSize(new Dimension(180, 50));
 		btn.setBackground(bgColor);
@@ -214,20 +197,14 @@ public class Form_ThanhToan extends JPanel implements ActionListener {
 		return btn;
 	}
 
-	// === QR Code Generator (Sử dụng thư viện Zxing) ===
 	private ImageIcon generateQRCodeImage(String data, int width, int height) throws Exception {
-		// ... (Code tạo QR giữ nguyên) ...
 		QRCodeWriter qrCodeWriter = new QRCodeWriter();
 		BitMatrix bitMatrix = qrCodeWriter.encode(data, BarcodeFormat.QR_CODE, width, height);
 		BufferedImage image = MatrixToImageWriter.toBufferedImage(bitMatrix);
 		return new ImageIcon(image);
 	}
 	
-	/**
-	 * Lưu Form_ThanhToan hiện tại thành hình ảnh PNG
-	 */
 	private void savePanelAsImage() {
-	    // ... (Code lưu ảnh giữ nguyên) ...
 	    String fileName = "Ticket_" + this.ticketCode + ".png";
 	    
 	    JFileChooser fileChooser = new JFileChooser();
@@ -240,13 +217,11 @@ public class Form_ThanhToan extends JPanel implements ActionListener {
 	        File fileToSave = fileChooser.getSelectedFile();
 	        
 	        try {
-	            // Lấy kích thước panel hiện tại
 	            BufferedImage image = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_RGB);
 	            Graphics2D g2d = image.createGraphics();
 	            this.paint(g2d); 
 	            g2d.dispose();
 
-	            // Lưu ảnh dưới dạng PNG
 	            ImageIO.write(image, "png", fileToSave);
 	            JOptionPane.showMessageDialog(this, 
 	                "Đã lưu vé thành công tại: " + fileToSave.getAbsolutePath(), 
@@ -263,14 +238,12 @@ public class Form_ThanhToan extends JPanel implements ActionListener {
 	    }
 	}
 	
-    /**
-     * Hàm xử lý sự kiện cho nút Quay lại và Tải xuống.
-     */
+ 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == btnReturnHome) {
 			if (onReturnHome != null) {
-				onReturnHome.run(); // Quay lại Form_ThongTinKhachHang (hoặc màn hình trước đó)
+				onReturnHome.run(); 
 			}
 		} else if (e.getSource() == btnDownload) {
 			savePanelAsImage();

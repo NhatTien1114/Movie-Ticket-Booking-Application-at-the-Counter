@@ -61,7 +61,7 @@ public class Form_DangKy extends JFrame implements ActionListener, MouseListener
 		getContentPane().add(pNorth, BorderLayout.NORTH);
 
 		JLabel lblTitle = new JLabel("ĐĂNG KÝ");
-		lblTitle.setFont(new Font("Roboto", Font.BOLD, 28));
+		lblTitle.setFont(new Font("Unbounded", Font.BOLD, 28));
 		lblTitle.setForeground(primary);
 		pNorth.add(lblTitle);
 		getContentPane().add(pCenter, BorderLayout.CENTER);
@@ -243,9 +243,6 @@ public class Form_DangKy extends JFrame implements ActionListener, MouseListener
 				return;
 			}
 
-			// ====== LOGIC ĐĂNG KÝ MỚI ======
-
-			// 1. Kiểm tra tài khoản đã tồn tại chưa
 			if (nhanVienDAO.checkTaiKhoanTonTai(username)) {
 				JOptionPane.showMessageDialog(this, "Tên tài khoản đã tồn tại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
 				txtTaiKhoan.selectAll();
@@ -270,7 +267,7 @@ public class Form_DangKy extends JFrame implements ActionListener, MouseListener
 			if (dangKyThanhCong) {
 				JOptionPane.showMessageDialog(this, "Đăng ký thành công! Vui lòng đăng nhập.");
 				if (listener != null) {
-					listener.onShowLogin(); // Yêu cầu controller mở lại form đăng nhập
+					listener.onShowLogin(); 
 				}
 				dispose(); 
 			} else {

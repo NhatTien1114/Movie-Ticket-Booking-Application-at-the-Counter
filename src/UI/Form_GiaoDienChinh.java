@@ -418,12 +418,10 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 // ======================= VẼ LẠI PANEL USER ĐĂNG NHẬP / ĐĂNG KÝ =======================
 
 	private void updateUserPanel() {
-		// Xóa mọi thứ cũ trong panel
 		userPanel.removeAll();
 
 		if (isLoggedIn) {
 			JLabel userIcon = new JLabel(new ImageIcon(getClass().getResource("/Image/user.png")));
-			// SỬA DÙNG 'loggedInUsername' thay vì 'tk' (vì tk bị null)
 			JLabel userName = new JLabel("Xin chào " + loggedInUsername);
 			userName.setFont(new Font("Roboto", Font.BOLD, 14));
 			userName.setForeground(Color.WHITE);
@@ -439,23 +437,17 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 			btnLogout.setForeground(Color.WHITE);
 			btnLogout.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			btnLogout.addActionListener(e -> {
-				// Xử lý đăng xuất
-				this.isLoggedIn = false;
-				this.loggedInUsername = "";
-				updateUserPanel(); // Vẽ lại panel (hiện nút Đăng nhập)
-
-				// Tùy chọn: gọi listener để quay về màn hình đăng nhập
-				// if(listener != null) {
-				// listener.onShowLogin();
-				// this.dispose();
-				// }
+				int luaChon = JOptionPane.showConfirmDialog(this, "Bạn có muốn thoát?", "Cảnh báo", JOptionPane.ERROR_MESSAGE);
+				if (luaChon == JOptionPane.YES_OPTION) {
+					System.exit(0);
+				}
 			});
 			userPanel.add(btnLogout);
 
 		} else {
 			JLabel userIcon = new JLabel(new ImageIcon(getClass().getResource("/Image/user.png")));
-			btnLogin = new JButton("Đăng nhập"); // Khởi tạo lại
-			btnRegister = new JButton("Đăng ký"); // Khởi tạo lại
+			btnLogin = new JButton("Đăng nhập"); 
+			btnRegister = new JButton("Đăng ký"); 
 
 			Font btnFont = new Font("Roboto", Font.BOLD, 13);
 			btnLogin.setFont(btnFont);
@@ -471,7 +463,6 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 			btnLogin.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			btnRegister.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-			// THÊM LISTENER TẠI ĐÂY (quan trọng)
 			btnLogin.addActionListener(this);
 			btnRegister.addActionListener(this);
 
@@ -480,7 +471,6 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 			userPanel.add(btnRegister);
 		}
 
-		// Yêu cầu panel vẽ lại
 		userPanel.revalidate();
 		userPanel.repaint();
 	}

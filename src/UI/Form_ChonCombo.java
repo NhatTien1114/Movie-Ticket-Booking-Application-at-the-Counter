@@ -189,23 +189,21 @@ public class Form_ChonCombo extends JPanel implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 	    Object o = e.getSource();
 	    if (o.equals(btnInfo)) {
-	        // === Xử lý lỗi NullPointerException ===
 
 	        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(Form_ChonCombo.this);
 	        
 	        String tenPhim = suatChieu.getPhim().getTenPhim();
 	        int thoiLuong = suatChieu.getPhim().getThoiLuong(); 
 
-	        // Tính toán thông tin ghế (giữ nguyên logic của bạn)
 	        int soGheDaChon = gheDaChon.size();
 	        String danhSachGhe = gheDaChon.stream()
 	                .map(Ghe::getMaGhe)
 	                .reduce((a, b) -> a + ", " + b)
 	                .orElse("Chưa chọn");
 	        
-	        long gheThuong = gheDaChon.stream().filter(g -> g.getLoaiGhe().toString().equals("Ghế Thường")).count();
-	        long gheVip = gheDaChon.stream().filter(g -> g.getLoaiGhe().toString().equals("Ghế Vip")).count();
-	        long gheDoi = gheDaChon.stream().filter(g -> g.getLoaiGhe().toString().equals("Ghế Đôi")).count();
+	        long gheThuong = gheDaChon.stream().filter(g -> g.getLoaiGhe() == Ghe.LoaiGhe.THUONG).count();
+	        long gheVip = gheDaChon.stream().filter(g -> g.getLoaiGhe() == Ghe.LoaiGhe.VIP).count();
+	        long gheDoi = gheDaChon.stream().filter(g -> g.getLoaiGhe() == Ghe.LoaiGhe.DOI).count();
 	        double giaVe = gheThuong * 50_000 + gheVip * 70_000 + gheDoi * 100_000;
 
 
@@ -221,13 +219,12 @@ public class Form_ChonCombo extends JPanel implements ActionListener {
 	                giaVe, 
 	                combos, 
 	                gioBatDauStr, 
-	                () -> { // Tham số thứ 8: Runnable onBack (quay lại form Combo này)
-	                    // Gắn lại chính instance Form_ChonCombo đang chạy để bảo toàn trạng thái
+	                () -> {
 	                    frame.setContentPane(Form_ChonCombo.this); 
 	                    frame.revalidate();
 	                    frame.repaint();
 	                },
-	                this.onPayment // Tham số thứ 9: Consumer<HoaDon> onPayment
+	                this.onPayment 
 	            );
 	        
 	        frame.setContentPane(formThongTin);

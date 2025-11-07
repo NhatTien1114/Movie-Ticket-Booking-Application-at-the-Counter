@@ -14,6 +14,10 @@ import Entity.PhongChieu;
 import Entity.SuatChieu;
 import java.util.function.Consumer;
 
+import javax.swing.ToolTipManager;
+
+import java.util.Random;
+
 public class Form_ChonGhe extends JPanel implements ActionListener {
 	private Phim phim;
 	private Ghe ghe;
@@ -38,6 +42,8 @@ public class Form_ChonGhe extends JPanel implements ActionListener {
 		this.gioBatDauStr = gioBatDauStr;
 		setLayout(new BorderLayout());
 		setBackground(new Color(10, 14, 35));
+		
+		ToolTipManager.sharedInstance().registerComponent(this);
 
 		// ==== PANEL CHÍNH ====
 		JPanel mainPanel = new JPanel(new BorderLayout());
@@ -136,13 +142,26 @@ public class Form_ChonGhe extends JPanel implements ActionListener {
 	private void hienThiDanhSachGhe() {
 		pnlGhe.removeAll();
 
-		// Lấy phòng chiếu tương ứng với phim
 		DanhSachPhongChieu dsPhong = new DanhSachPhongChieu();
 		int indexPhim = Math.min(2, phim.getMaPhim().hashCode() % 3);
 		phongChieu = dsPhong.getPhongTheoChiSo(indexPhim);
 
 		SuatChieu suatChieu = new SuatChieu("SC" + (indexPhim + 1), LocalDateTime.now(), phim, phongChieu);
 		List<Ghe> dsGhe = suatChieu.getPhongChieu().getDanhSachGhe();
+		
+		Random rand = new Random();
+	    int soGheDemo = 3 + rand.nextInt(2); 
+	    int gheDaDat = 0;
+	    
+	    while (gheDaDat < soGheDemo && dsGhe.size() > 0) {
+	        int randomIndex = rand.nextInt(dsGhe.size());
+	        Ghe gheDemo = dsGhe.get(randomIndex);
+
+	        if (!gheDemo.isTinhTrang()) {
+	            gheDemo.setTinhTrang(true); 
+	            gheDaDat++;
+	        }
+	    }
 
 		for (Ghe ghe : dsGhe) {
 			JButton btnGhe = new JButton(ghe.getMaGhe());
@@ -157,27 +176,69 @@ public class Form_ChonGhe extends JPanel implements ActionListener {
 			if (ghe.isTinhTrang()) {
 				btnGhe.setBackground(Color.GRAY);
 				btnGhe.setEnabled(false);
+				btnGhe.setToolTipText("Ghế đã có người đặt");
 			} else {
 				switch (ghe.getLoaiGhe()) {
-				case THUONG -> btnGhe.setBackground(new Color(0, 120, 255));
-				case VIP -> btnGhe.setBackground(new Color(255, 80, 80));
-				case DOI -> btnGhe.setBackground(new Color(150, 80, 255));
+	            case THUONG:
+	                btnGhe.setBackground(new Color(0, 120, 255));  
+	                btnGhe.setToolTipText("Ghế thường: 50.000đ");
+	                break;
+	            case VIP:
+	                btnGhe.setBackground(new Color(255, 80, 80)); 
+	                btnGhe.setToolTipText("Ghế VIP: 70.000đ");
+	                break;
+	            case DOI:
+	                btnGhe.setBackground(new Color(150, 80, 255));
+	                btnGhe.setToolTipText("Ghế đôi: 100.000đ");
+	                break;
 				}
 			}
 
 			btnGhe.addActionListener(e -> {
-				if (gheDaChon.contains(ghe)) {
-					gheDaChon.remove(ghe);
-					switch (ghe.getLoaiGhe()) {
-					case THUONG -> btnGhe.setBackground(new Color(0, 120, 255));
-					case VIP -> btnGhe.setBackground(new Color(255, 80, 80));
-					case DOI -> btnGhe.setBackground(new Color(150, 80, 255));
-					}
-				} else {
-					gheDaChon.add(ghe);
-					btnGhe.setBackground(new Color(255, 0, 255));
-				}
-			});
+		        if (ghe.getLoaiGhe() == Ghe.LoaiGhe.DOI) {
+		            Ghe gheCap = timGheCap(phongChieu, ghe);
+		         
+		            JButton btnGheCap = null;
+		            if (gheCap != null) {
+		                for (Component comp : pnlGhe.getComponents()) {
+		                    if (comp instanceof JButton && ((JButton) comp).getText().equals(gheCap.getMaGhe())) {
+		                        btnGheCap = (JButton) comp;
+		                        break;
+		                    }
+		                }
+		            }
+
+		            if (gheDaChon.contains(ghe)) {
+		                gheDaChon.remove(ghe);
+		                btnGhe.setBackground(new Color(150, 80, 255)); 
+
+		                if (gheCap != null && btnGheCap != null) {
+		                    gheDaChon.remove(gheCap);
+		                    btnGheCap.setBackground(new Color(150, 80, 255));
+		                }
+		            } else {
+		                gheDaChon.add(ghe);
+		                btnGhe.setBackground(new Color(255, 0, 255));
+
+		                if (gheCap != null && btnGheCap != null && !gheCap.isTinhTrang()) {
+		                    gheDaChon.add(gheCap);
+		                    btnGheCap.setBackground(new Color(255, 0, 255));
+		                }
+		            }
+
+		        } else {
+		            if (gheDaChon.contains(ghe)) {
+		                gheDaChon.remove(ghe);
+		                switch (ghe.getLoaiGhe()) {
+		                    case THUONG -> btnGhe.setBackground(new Color(0, 120, 255));
+		                    case VIP -> btnGhe.setBackground(new Color(255, 80, 80));
+		                }
+		            } else {
+		                gheDaChon.add(ghe);
+		                btnGhe.setBackground(new Color(255, 0, 255));
+		            }
+		        }
+		    });
 
 			pnlGhe.add(btnGhe);
 		}

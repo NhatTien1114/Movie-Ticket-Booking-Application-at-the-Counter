@@ -13,8 +13,8 @@ public class Form_HienThiThongTinPhim extends JFrame {
 
 	private static final int FRAME_WIDTH = 650;
 	private static final int FRAME_HEIGHT = 450;
-	private final Color primary = new Color(26, 26, 46); 
-	private final Color accent = new Color(233, 69, 96); 
+	private final Color primary = new Color(26, 26, 46);
+	private final Color accent = new Color(233, 69, 96);
 	private final Color textColor = Color.WHITE;
 	private JButton btnDatVe;
 	private SuatChieu suatChieu;
@@ -34,7 +34,8 @@ public class Form_HienThiThongTinPhim extends JFrame {
 		JPanel pnlAnh = taoPanelAnh(suatChieu.getPhim().getDuongDanAnh());
 		add(pnlAnh, BorderLayout.WEST);
 
-		// ======================= PHẦN BÊN PHẢI: HIỂN THỊ THÔNG TIN =======================
+		// ======================= PHẦN BÊN PHẢI: HIỂN THỊ THÔNG TIN
+		// =======================
 		JPanel pnlThongTin = taoPanelThongTin(suatChieu.getPhim());
 		add(pnlThongTin, BorderLayout.CENTER);
 
@@ -145,31 +146,31 @@ public class Form_HienThiThongTinPhim extends JFrame {
 		gbc.weighty = 1.0;
 		gbc.fill = GridBagConstraints.BOTH;
 		pnl.add(scrollPane, gbc);
-		
+
 		btnDatVe = new JButton("ĐẶT VÉ NGAY");
-        btnDatVe.setFont(new Font("Roboto", Font.BOLD, 16));
-        btnDatVe.setBackground(accent); 
-        btnDatVe.setForeground(textColor); 
-        btnDatVe.setFocusPainted(false); 
-        btnDatVe.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+		btnDatVe.setFont(new Font("Roboto", Font.BOLD, 16));
+		btnDatVe.setBackground(accent);
+		btnDatVe.setForeground(textColor);
+		btnDatVe.setFocusPainted(false);
+		btnDatVe.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
-        btnDatVe.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-            	new Form_DatVe(suatChieu);
-                dispose();
-            }
-        });
+		btnDatVe.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new Form_DatVe(suatChieu);
+				dispose();
+			}
+		});
 
-        gbc.gridx = 0;
-        gbc.gridy = row++;
-        gbc.gridwidth = 2; 
-        gbc.weighty = 0;
-        gbc.fill = GridBagConstraints.HORIZONTAL; 
-        gbc.anchor = GridBagConstraints.CENTER;
-        gbc.insets = new Insets(15, 0, 0, 0); 
-        pnl.add(btnDatVe, gbc);
-		
+		gbc.gridx = 0;
+		gbc.gridy = row++;
+		gbc.gridwidth = 2;
+		gbc.weighty = 0;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.anchor = GridBagConstraints.CENTER;
+		gbc.insets = new Insets(15, 0, 0, 0);
+		pnl.add(btnDatVe, gbc);
+
 		setLabelColor(this, textColor);
 		return pnl;
 	}
@@ -184,16 +185,4 @@ public class Form_HienThiThongTinPhim extends JFrame {
 		}
 	}
 
-//	public static void main(String[] args) {
-//		String duongDanAnhTest = "src/Image/anh1.jpg";
-//
-//		Phim phimTest = new Phim("P003", "Avatar: Dòng Chảy Của Nước", Phim.TheLoai.HANH_DONG, 192, "James Cameron",
-//				true,
-//				"Jake Sully hiện đang sống cùng gia đình mới trên hành tinh Pandora. Mọi thứ thay đổi khi một mối đe dọa cũ quay trở lại...",
-//				duongDanAnhTest);
-//
-//		SwingUtilities.invokeLater(() -> {
-//			new Form_HienThiThongTinPhim(phimTest);
-//		});
-//	}
 }

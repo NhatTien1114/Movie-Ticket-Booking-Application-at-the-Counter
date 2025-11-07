@@ -31,7 +31,7 @@ public class Form_ThongTinKhachHang extends JPanel implements ActionListener {
 	private int thoiLuongPhim;
 	private int soGheDaChon;
 	private String danhSachGhe;
-	private double giaVe; // Chú ý: giaVe ở đây là GIÁ CỦA 1 VÉ, KHÔNG phải tổng tiền vé.
+	private double giaVe;
 	private List<ComboDoAn> comboDaChon;
 	private String gioBatDauStr;
 	private Consumer<HoaDon> onPayment;
@@ -44,7 +44,7 @@ public class Form_ThongTinKhachHang extends JPanel implements ActionListener {
 		this.thoiLuongPhim = thoiLuongPhim;
 		this.soGheDaChon = soGheDaChon;
 		this.danhSachGhe = danhSachGhe;
-		this.giaVe = giaVe; // Giá vé cơ bản
+		this.giaVe = giaVe;
 		this.comboDaChon = comboDaChon;
 		this.gioBatDauStr = gioBatDauStr;
 		this.onPayment = onPayment;
@@ -59,9 +59,7 @@ public class Form_ThongTinKhachHang extends JPanel implements ActionListener {
 		add(createTopPanel(), BorderLayout.NORTH);
 	}
 
-	// === Các phương thức UI (Giữ nguyên) ===
 	private JPanel createTopPanel() {
-		// ... (Code tạo header giữ nguyên) ...
 		JPanel topPanel = new JPanel(new BorderLayout());
 		topPanel.setBackground(primary);
 		topPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
@@ -90,7 +88,6 @@ public class Form_ThongTinKhachHang extends JPanel implements ActionListener {
 	}
 
 	private JPanel createTicketDetailPanel() {
-		// ... (Code tạo panel chi tiết vé giữ nguyên) ...
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		panel.setBackground(new Color(20, 25, 65));
@@ -105,37 +102,35 @@ public class Form_ThongTinKhachHang extends JPanel implements ActionListener {
 		panel.add(Box.createVerticalStrut(10));
 
 		java.time.LocalDate today = java.time.LocalDate.now();
-        // Hiển thị thứ bằng tiếng Việt
 		String dayOfWeek = today.getDayOfWeek().getDisplayName(TextStyle.FULL, new Locale("vi", "VN"));
 		String dateStr = dayOfWeek + ", " + today;
-		
+
 		java.time.LocalTime gioBatDau = java.time.LocalTime.parse(gioBatDauStr);
 		java.time.LocalTime gioKetThuc = gioBatDau.plusMinutes(thoiLuongPhim);
 
-		// Chú ý: giaVe * soGheDaChon là tổng tiền vé
-		double tongTienVe = giaVe * soGheDaChon; 
+		double tongTienVe = giaVe * soGheDaChon;
 		double tongTienCombo = comboDaChon.stream().mapToDouble(c -> c.getGia() * c.getSoLuong()).sum();
 		double tongTien = tongTienVe + tongTienCombo;
 
 		DecimalFormat df = new DecimalFormat("#,### đ");
 
-		JLabel lblMovie = createLabel("Movie: " + tenPhim);
-		JLabel lblAddress = createLabel("Address: 242 Nguyễn Văn Lượng, Gò Vấp");
-		JLabel lblDate = createLabel("Date: " + dateStr);
-		JLabel lblTickets = createLabel("Tickets: " + soGheDaChon);
-		JLabel lblSeats = createLabel("Seats: " + danhSachGhe);
-		JLabel lblTime = createLabel("Time: " + gioBatDau + " - " + gioKetThuc);
-		JLabel lblScreen = createLabel("Screen: 3");
+		JLabel lblMovie = createLabel("Phim: " + tenPhim);
+		JLabel lblAddress = createLabel("Địa Chỉ: 242 Nguyễn Văn Lượng, Gò Vấp");
+		JLabel lblDate = createLabel("Ngày: " + dateStr);
+		JLabel lblTickets = createLabel("Số Vé: " + soGheDaChon);
+		JLabel lblSeats = createLabel("Ghế: " + danhSachGhe);
+		JLabel lblTime = createLabel("Thời Gian: " + gioBatDau + " - " + gioKetThuc);
+		JLabel lblScreen = createLabel("Phòng: 3");
 
 		String comboText = comboDaChon.isEmpty() ? "None"
 				: comboDaChon.stream().filter(c -> c.getSoLuong() > 0).map(c -> c.getTenCombo() + " x" + c.getSoLuong())
 						.reduce((a, b) -> a + ", " + b).orElse("Không có");
 		JLabel lblCombo = createLabel("Combo: " + comboText);
-		JLabel lblTotal = createLabel("Total: " + df.format(tongTien));
+		JLabel lblTotal = createLabel("Tổng: " + df.format(tongTien));
 
 		for (JLabel lbl : new JLabel[] { lblMovie, lblAddress, lblDate, lblTickets, lblSeats, lblTime, lblScreen,
 				lblCombo, lblTotal }) {
-			panel.add(Box.createVerticalStrut(10)); 
+			panel.add(Box.createVerticalStrut(10));
 			panel.add(lbl);
 		}
 
@@ -144,21 +139,18 @@ public class Form_ThongTinKhachHang extends JPanel implements ActionListener {
 	}
 
 	private JPanel createCustomerFormPanel() {
-		// ... (Code tạo form khách hàng giữ nguyên) ...
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		panel.setOpaque(false);
 		panel.setBorder(BorderFactory.createEmptyBorder(40, 60, 40, 60));
 
-		// 🏷️ Tiêu đề
 		JLabel lblTitle = new JLabel("THÔNG TIN KHÁCH HÀNG");
-		lblTitle.setFont(new Font("Poppins", Font.BOLD, 24));
+		lblTitle.setFont(new Font("Unbounded", Font.BOLD, 24));
 		lblTitle.setForeground(Color.WHITE);
 		lblTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
 		panel.add(lblTitle);
 		panel.add(Box.createVerticalStrut(25));
 
-		// 🧾 Form nhập liệu
 		JPanel pnlForm = new JPanel();
 		pnlForm.setBackground(primary);
 		pnlForm.setLayout(new BoxLayout(pnlForm, BoxLayout.Y_AXIS));
@@ -180,7 +172,6 @@ public class Form_ThongTinKhachHang extends JPanel implements ActionListener {
 
 		panel.add(pnlForm);
 
-		// 🪙 Nút thanh toán
 		JPanel pnlButtons = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		pnlButtons.setOpaque(false);
 
@@ -200,7 +191,6 @@ public class Form_ThongTinKhachHang extends JPanel implements ActionListener {
 	}
 
 	private JPanel createInputGroup(String labelText, JTextField textField) {
-		// ... (Code tạo group input giữ nguyên) ...
 		JPanel group = new JPanel();
 		group.setLayout(new BoxLayout(group, BoxLayout.Y_AXIS));
 		group.setOpaque(false);
@@ -214,13 +204,12 @@ public class Form_ThongTinKhachHang extends JPanel implements ActionListener {
 		textField.setAlignmentX(Component.LEFT_ALIGNMENT);
 
 		group.add(lbl);
-		group.add(Box.createVerticalStrut(5)); 
+		group.add(Box.createVerticalStrut(5));
 		group.add(textField);
 		return group;
 	}
 
 	private JTextField createTextField() {
-		// ... (Code tạo text field giữ nguyên) ...
 		JTextField txt = new JTextField();
 		txt.setFont(new Font("Roboto", Font.PLAIN, 14));
 		txt.setMaximumSize(new Dimension(400, 35));
@@ -231,25 +220,20 @@ public class Form_ThongTinKhachHang extends JPanel implements ActionListener {
 	}
 
 	private JLabel createLabel(String text) {
-		// ... (Code tạo label giữ nguyên) ...
 		JLabel label = new JLabel(text);
 		label.setFont(new Font("Poppins", Font.BOLD, 14));
 		label.setForeground(Color.WHITE);
-		label.setAlignmentX(Component.LEFT_ALIGNMENT); 
-		label.setBorder(BorderFactory.createEmptyBorder(0, 5, 5, 0)); 
+		label.setAlignmentX(Component.LEFT_ALIGNMENT);
+		label.setBorder(BorderFactory.createEmptyBorder(0, 5, 5, 0));
 		return label;
 	}
 
 	private List<ChiTietHoaDon> createChiTietHoaDonList() {
-		// ... (Code tạo ChiTietHoaDon giữ nguyên) ...
 		List<ChiTietHoaDon> chiTietList = new ArrayList<>();
 
 		if (soGheDaChon > 0) {
-			// Lưu ý: giaVe ở đây là tổng tiền vé (số tiền ứng với số ghế đã chọn)
-			// Tuy nhiên, logic Entity của bạn đang tạo Ve với giaVe truyền vào.
-			// Nếu giaVe là giá 1 vé, thì đoạn code sau cần được kiểm tra lại logic Entity.
-			// Tạm thời, giữ nguyên Ve(giaVe) và set soLuong
-			Ve veCoBan = new Ve(this.giaVe / this.soGheDaChon); // Giả sử giaVe là tổng tiền vé, chia cho số lượng để lấy giá 1 vé
+
+			Ve veCoBan = new Ve(this.giaVe / this.soGheDaChon);
 			ChiTietHoaDon chiTietVe = new ChiTietHoaDon();
 			chiTietVe.setVe(veCoBan);
 			chiTietVe.setSoLuong(soGheDaChon);
@@ -272,7 +256,6 @@ public class Form_ThongTinKhachHang extends JPanel implements ActionListener {
 	}
 
 	private boolean validateCustomerInfo() {
-		// ... (Code kiểm tra validate giữ nguyên) ...
 		String name = txtName.getText().trim();
 		String email = txtEmail.getText().trim();
 		String phone = txtPhone.getText().trim();
@@ -301,85 +284,58 @@ public class Form_ThongTinKhachHang extends JPanel implements ActionListener {
 
 		return true;
 	}
-	
-    /**
-     * Hàm xử lý sự kiện cho nút Thanh Toán.
-     * Tạo dữ liệu cho Form_ThanhToan và chuyển màn hình.
-     */
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
-	    Object o = e.getSource();
-	    if (o.equals(btnPayment)) {
+		Object o = e.getSource();
+		if (o.equals(btnPayment)) {
 
-	        // 1. Kiểm tra thông tin khách hàng
-	        if (!validateCustomerInfo()) {
-	            return;
-	        }
+			if (!validateCustomerInfo()) {
+				return;
+			}
 
-	        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+			JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
 
-	        // 2. Tính toán Tổng tiền (giaVe là tổng tiền vé)
-	        double tongTienVe = this.giaVe * this.soGheDaChon; // SỬA: Giả sử giaVe đã là giá tổng tiền vé, cần kiểm tra lại
-	        
-	        double tongTienCombo = comboDaChon.stream()
-	                .mapToDouble(c -> c.getGia() * c.getSoLuong())
-	                .sum();
-	                
-	        // totalAmount = TỔNG TIỀN VÉ + TỔNG TIỀN COMBO
-	        double totalAmount = tongTienVe + tongTienCombo; 
+			double tongTienVe = this.giaVe * this.soGheDaChon;
 
-	        // 3. Chuẩn bị dữ liệu hiển thị cho Form_ThanhToan
-	        
-	        // Mã Vé Giả
-	        String ticketCode = "UZ" + (int)(Math.random() * 90000 + 10000) + "MBXS1";
-	        String qrData = "PAYMENT_INFO|AMOUNT=" + totalAmount + "|CODE=" + ticketCode;
+			double tongTienCombo = comboDaChon.stream().mapToDouble(c -> c.getGia() * c.getSoLuong()).sum();
 
-	        // Ngày 
-	        java.time.LocalDate today = java.time.LocalDate.now();
-	        String dateStr = today.getDayOfWeek().getDisplayName(TextStyle.FULL, new Locale("vi", "VN")) + ", " + today.toString();
-	        
-	        // Giờ (Tính Giờ kết thúc)
-	        java.time.LocalTime gioBatDau = java.time.LocalTime.parse(gioBatDauStr);
-	        String timeStr = gioBatDauStr + " - " + gioBatDau.plusMinutes(thoiLuongPhim);
+			double totalAmount = tongTienVe + tongTienCombo;
 
-	        // Chi tiết Combo (Nếu không có combo, mặc định là "None")
-	        String comboText = comboDaChon.stream().filter(c -> c.getSoLuong() > 0)
-	                .map(c -> c.getTenCombo() + " x" + c.getSoLuong())
-	                .reduce("None", (a, b) -> a.equals("None") ? b : a + ", " + b);
-	        
-	        String diaChiRap = "242 Nguyễn Văn Lượng, Gò Vấp,, Thành phố Hồ Chí Minh"; 
-	        
-	        // 4. Ghi nhận Hóa đơn (Giả định thanh toán thành công)
-	        HoaDon hoaDon = new HoaDon();
-	        hoaDon.setChiTiet(createChiTietHoaDonList());
-	        if (onPayment != null) {	
-	            onPayment.accept(hoaDon);
-	        }
+			String ticketCode = "UZ" + (int) (Math.random() * 90000 + 10000) + "MBXS1";
+			String qrData = "PAYMENT_INFO|AMOUNT=" + totalAmount + "|CODE=" + ticketCode;
 
-	        // 5. Định nghĩa hành động quay lại (Quay lại Form_ThongTinKhachHang)
-	        Runnable backToInfoForm = () -> {
-	            frame.setContentPane(this);
-	            frame.revalidate();
-	            frame.repaint();
-	        };
+			java.time.LocalDate today = java.time.LocalDate.now();
+			String dateStr = today.getDayOfWeek().getDisplayName(TextStyle.FULL, new Locale("vi", "VN")) + ", "
+					+ today.toString();
 
-	        // 6. TẠO VÀ HIỂN THỊ FORM_THANHTOAN (10 tham số)
-	        Form_ThanhToan formThanhToan = new Form_ThanhToan(
-	            qrData,
-	            ticketCode,
-	            totalAmount,
-	            tenPhim, 
-	            danhSachGhe, 
-	            dateStr,
-	            timeStr,
-	            diaChiRap,
-	            comboText,
-	            backToInfoForm
-	        );
+			java.time.LocalTime gioBatDau = java.time.LocalTime.parse(gioBatDauStr);
+			String timeStr = gioBatDauStr + " - " + gioBatDau.plusMinutes(thoiLuongPhim);
 
-	        frame.setContentPane(formThanhToan);
-	        frame.revalidate();
-	        frame.repaint();
-	    }
+			String comboText = comboDaChon.stream().filter(c -> c.getSoLuong() > 0)
+					.map(c -> c.getTenCombo() + " x" + c.getSoLuong())
+					.reduce("None", (a, b) -> a.equals("None") ? b : a + ", " + b);
+
+			String diaChiRap = "242 Nguyễn Văn Lượng, Gò Vấp,, Thành phố Hồ Chí Minh";
+
+			HoaDon hoaDon = new HoaDon();
+			hoaDon.setChiTiet(createChiTietHoaDonList());
+			if (onPayment != null) {
+				onPayment.accept(hoaDon);
+			}
+
+			Runnable backToInfoForm = () -> {
+				frame.setContentPane(this);
+				frame.revalidate();
+				frame.repaint();
+			};
+
+			Form_ThanhToan formThanhToan = new Form_ThanhToan(qrData, ticketCode, totalAmount, tenPhim, danhSachGhe,
+					dateStr, timeStr, diaChiRap, comboText, backToInfoForm);
+
+			frame.setContentPane(formThanhToan);
+			frame.revalidate();
+			frame.repaint();
+		}
 	}
 }

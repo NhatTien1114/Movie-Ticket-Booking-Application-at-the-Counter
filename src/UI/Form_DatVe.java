@@ -38,25 +38,23 @@ public class Form_DatVe extends JFrame implements ActionListener, MouseListener 
 	private JPanel pnlInfo;
 	private JButton btnTime;
 	private JButton btnCinema;
-	// === KHẮC PHỤC LỖI DỮ LIỆU ===
 	private Phim phimDangChon;
 	private DanhSachCombo dsCombo;
 	private PhongChieu phongChieuDangChon;
-	private SuatChieu suatChieuHienTai; // Lưu trữ SuatChieu được truyền vào ban đầu
-	private List<Ghe> gheDaChon; // KHỞI TẠO BIẾN CẦN THIẾT CHO BƯỚC TIẾP THEO
+	private SuatChieu suatChieuHienTai;
+	private List<Ghe> gheDaChon;
 	private String gioBatDauStr;
 	private Consumer<HoaDon> onPayment;
 
-	// Dữ liệu mock (tạo mới SuatChieu khi chọn giờ)
 	private PhongChieu phong1 = new PhongChieu("P01", true, null);
 	private PhongChieu phong2 = new PhongChieu("P02", true, null);
-	private boolean[] selected = { false }; // DÙNG ĐỂ NHẬN BIẾT CLICK
+	private boolean[] selected = { false };
 	private JButton btnTime2;
 
 	public Form_DatVe(SuatChieu suatChieu) {
-		this.suatChieuHienTai = suatChieu; // Lưu lại SuatChieu gốc
+		this.suatChieuHienTai = suatChieu;
 		this.phimDangChon = suatChieu.getPhim();
-		this.gheDaChon = new ArrayList<>(); // Khởi tạo danh sách ghế rỗng
+		this.gheDaChon = new ArrayList<>();
 		dsCombo = new DanhSachCombo();
 		setTitle("Đặt vé - " + suatChieu.getPhim().getTenPhim());
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -188,87 +186,71 @@ public class Form_DatVe extends JFrame implements ActionListener, MouseListener 
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-	    Object o = e.getSource();
-	    
-	    // =======================================================
-	    // --- KHỐI XỬ LÝ CHUYỂN MÀN HÌNH (BTN SEATINGS) ---
-	    // =======================================================
-	    if (o.equals(btnSeatings)) {
-	        if (phongChieuDangChon == null) {
-	            JOptionPane.showMessageDialog(this, "Vui lòng chọn giờ chiếu trước!");
-	            return;
-	        }
-	        
-	        // Cần đảm bảo suatChieuDuocChon là final/effectively final cho lambda
-	        final SuatChieu suatChieuDuocChon = new SuatChieu(
-	            suatChieuHienTai.getMaSuatChieu(),
-	            suatChieuHienTai.getNgayGio(), 
-	            phimDangChon, 
-	            phongChieuDangChon
-	        );
+		Object o = e.getSource();
 
-	        getContentPane().removeAll();
+		// =======================================================
+		// --- KHỐI XỬ LÝ CHUYỂN MÀN HÌNH (BTN SEATINGS) ---
+		// =======================================================
+		if (o.equals(btnSeatings)) {
+			if (phongChieuDangChon == null) {
+				JOptionPane.showMessageDialog(this, "Vui lòng chọn giờ chiếu trước!");
+				return;
+			}
 
-	        Form_ChonGhe panelChonGhe = new Form_ChonGhe(
-	        	    phimDangChon,
-	        	    phongChieuDangChon,
-	        	    suatChieuDuocChon,
-	        	    gioBatDauStr,
-	        	    () -> { 
-	        	        getContentPane().removeAll();
-	        	        add(pnlPoster, BorderLayout.WEST);
-	        	        add(pnlInfo, BorderLayout.CENTER);
-	        	        revalidate();
-	        	        repaint();
-	        	    },
-	        	    (List<Ghe> gheList) -> { 
-	        	        gheDaChon.clear();
-	        	        gheDaChon.addAll(gheList);
+			final SuatChieu suatChieuDuocChon = new SuatChieu(suatChieuHienTai.getMaSuatChieu(),
+					suatChieuHienTai.getNgayGio(), phimDangChon, phongChieuDangChon);
 
-	        	        getContentPane().removeAll();
+			getContentPane().removeAll();
 
-	        	        Form_ChonCombo formCombo = new Form_ChonCombo(
-	        	            dsCombo, 
-	        	            suatChieuDuocChon,
-	        	            gioBatDauStr,
-	        	            gheDaChon, 
-	        	            () -> { 
-	        	                getContentPane().removeAll();
-	        	                add(pnlPoster, BorderLayout.WEST);
-	        	                add(pnlInfo, BorderLayout.CENTER);
-	        	                revalidate();
-	        	                repaint();
-	        	            }
-	        	        ,  onPayment);
-	        	        add(formCombo, BorderLayout.CENTER);
-	        	        revalidate();
-	        	        repaint();
-	        	    } 
-	        	); 
-	        	add(panelChonGhe, BorderLayout.CENTER);
-	        	revalidate();
-	        	repaint();
-	    } else if (o.equals(btnTime)) {
-	    	gioBatDauStr = btnTime.getText();
-	        phongChieuDangChon = phong1;
-	        btnTime.setBackground(highlight);
-	        btnTime2.setBackground(accent);
-	        btnSeatings.setEnabled(true); 
+			Form_ChonGhe panelChonGhe = new Form_ChonGhe(phimDangChon, phongChieuDangChon, suatChieuDuocChon,
+					gioBatDauStr, () -> {
+						getContentPane().removeAll();
+						add(pnlPoster, BorderLayout.WEST);
+						add(pnlInfo, BorderLayout.CENTER);
+						revalidate();
+						repaint();
+					}, (List<Ghe> gheList) -> {
+						gheDaChon.clear();
+						gheDaChon.addAll(gheList);
 
-	    } else if (o.equals(btnTime2)) {
-	    	gioBatDauStr = btnTime2.getText();
-	        phongChieuDangChon = phong2;
-	        btnTime2.setBackground(highlight);
-	        btnTime.setBackground(accent);
-	        btnSeatings.setEnabled(true); 
+						getContentPane().removeAll();
 
-	    } else if (o.equals(btnCinema)) {
-	        if (btnCinema.getBackground().equals(accent)) {
-	            btnCinema.setBackground(highlight);
-	        } else {
-	            btnCinema.setBackground(accent);
-	        }
-	    }
+						Form_ChonCombo formCombo = new Form_ChonCombo(dsCombo, suatChieuDuocChon, gioBatDauStr,
+								gheDaChon, () -> {
+									getContentPane().removeAll();
+									add(pnlPoster, BorderLayout.WEST);
+									add(pnlInfo, BorderLayout.CENTER);
+									revalidate();
+									repaint();
+								}, onPayment);
+						add(formCombo, BorderLayout.CENTER);
+						revalidate();
+						repaint();
+					});
+			add(panelChonGhe, BorderLayout.CENTER);
+			revalidate();
+			repaint();
+		} else if (o.equals(btnTime)) {
+			gioBatDauStr = btnTime.getText();
+			phongChieuDangChon = phong1;
+			btnTime.setBackground(highlight);
+			btnTime2.setBackground(accent);
+			btnSeatings.setEnabled(true);
+
+		} else if (o.equals(btnTime2)) {
+			gioBatDauStr = btnTime2.getText();
+			phongChieuDangChon = phong2;
+			btnTime2.setBackground(highlight);
+			btnTime.setBackground(accent);
+			btnSeatings.setEnabled(true);
+
+		} else if (o.equals(btnCinema)) {
+			if (btnCinema.getBackground().equals(accent)) {
+				btnCinema.setBackground(highlight);
+			} else {
+				btnCinema.setBackground(accent);
+			}
+		}
 	}
 
 	@Override
@@ -301,12 +283,4 @@ public class Form_DatVe extends JFrame implements ActionListener, MouseListener 
 
 	}
 
-//	// Test nhanh
-//	public static void main(String[] args) {
-//		Phim phim = new Phim("P001", "The Conjuring: Last Rites", Phim.TheLoai.KINH_DI, 120, "Michael Chaves", true,
-//				"Phần tiếp theo trong series kinh dị nổi tiếng.",
-//				"src/Image/ba0fc864-0fdb-4787-9dc7-8bcca93adb7a.png");
-//
-//		SwingUtilities.invokeLater(() -> new Form_DatVe(phim));
-//	}
 }
