@@ -204,7 +204,7 @@ public class Form_ChonCombo extends JPanel implements ActionListener {
 	        long gheThuong = gheDaChon.stream().filter(g -> g.getLoaiGhe() == Ghe.LoaiGhe.THUONG).count();
 	        long gheVip = gheDaChon.stream().filter(g -> g.getLoaiGhe() == Ghe.LoaiGhe.VIP).count();
 	        long gheDoi = gheDaChon.stream().filter(g -> g.getLoaiGhe() == Ghe.LoaiGhe.DOI).count();
-	        double giaVe = gheThuong * 50_000 + gheVip * 70_000 + gheDoi * 100_000;
+	        double giaVe = gheThuong * 50000 + gheVip * 70000 + gheDoi * 100000;
 
 
 	        java.util.List<ComboDoAn> combos = dsCombo.getDsCombo().stream()
