@@ -314,7 +314,7 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 				};
 
 				if (hienThi) {
-					PhongChieu mockPhongChieu = new PhongChieu("P000", true, null);
+					PhongChieu mockPhongChieu = new PhongChieu("P000", null);
 					SuatChieu mockSuatChieu = new SuatChieu("SC_MOCK_" + phimHienThi.getMaPhim(),
 							java.time.LocalDateTime.now(), phimHienThi, mockPhongChieu);
 
@@ -1051,8 +1051,8 @@ public class Form_GiaoDienChinh extends JFrame implements ActionListener, MouseL
 					JOptionPane.showMessageDialog(null, "Không tìm thấy phim nào có tên chứa: " + tuKhoa);
 				} else {
 					pMovieRow.removeAll();
-
-					PhongChieu mockPhongChieu = new PhongChieu("P000", true, null);
+					
+					PhongChieu mockPhongChieu = new PhongChieu("P000", null);
 
 					for (Phim p : ketQua) {
 						SuatChieu mockSuatChieu = new SuatChieu("SC_SEARCH_" + p.getMaPhim(),

@@ -46,8 +46,8 @@ public class Form_DatVe extends JFrame implements ActionListener, MouseListener 
 	private String gioBatDauStr;
 	private Consumer<HoaDon> onPayment;
 
-	private PhongChieu phong1 = new PhongChieu("P01", true, null);
-	private PhongChieu phong2 = new PhongChieu("P02", true, null);
+	private PhongChieu phong1 = new PhongChieu("P01", null);
+	private PhongChieu phong2 = new PhongChieu("P02", null);
 	private boolean[] selected = { false };
 	private JButton btnTime2;
 

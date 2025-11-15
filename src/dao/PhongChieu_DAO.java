@@ -21,10 +21,9 @@ public class PhongChieu_DAO {
 				stmt.setString(1, maPhong);
 				ResultSet rs = stmt.executeQuery(sql);
 	            while (rs.next()) {
-	                Boolean trangThai = rs.getBoolean("trangThai");
 	                List<Ghe> listG = ghe_dao.getAllGheTheoMaPhong(maPhong); // lay ds Ghe cua Phong Chieu
 
-	                PhongChieu p = new PhongChieu(maPhong, trangThai, listG);
+	                PhongChieu p = new PhongChieu(maPhong, listG);
 	                ds.add(p);
 	            }
 
@@ -42,10 +41,9 @@ public class PhongChieu_DAO {
              ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
                 String maPhong = rs.getString("maPhong");
-                Boolean trangThai = rs.getBoolean("trangThai");
                 List<Ghe> listG = ghe_dao.getAllGheTheoMaPhong(maPhong); // lay ds Ghe cua Phong Chieu
 
-                PhongChieu p = new PhongChieu(maPhong, trangThai, listG);
+                PhongChieu p = new PhongChieu(maPhong, listG);
                 ds.add(p);
             }
 
@@ -56,29 +54,12 @@ public class PhongChieu_DAO {
     }
 	
 	public boolean insert(PhongChieu pc) {
-        String sql = "INSERT INTO PhongChieu (maPhong, trangThai) VALUES (?, ?)";
+        String sql = "INSERT INTO PhongChieu (maPhong) VALUES (?)";
         try (Connection conn = ConnectDB.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, pc.getMaPhong());
-            ps.setBoolean(2, pc.isTrangThai());
             for(Ghe g : pc.getDanhSachGhe()) {
             	ghe_dao.insert(g, pc.getMaPhong());
-            }
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    public boolean update(PhongChieu pc) {
-        String sql = "UPDATE PhongChieu SET trangThai = ? WHERE maPhong = ?";
-        try (Connection conn = ConnectDB.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setBoolean(1, pc.isTrangThai());
-            ps.setString(2, pc.getMaPhong());
-            for(Ghe g : pc.getDanhSachGhe()) {
-            	ghe_dao.update(g, pc.getMaPhong());
             }
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {

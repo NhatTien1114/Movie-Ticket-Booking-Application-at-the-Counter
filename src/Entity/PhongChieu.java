@@ -5,12 +5,10 @@ import java.util.List;
 
 public class PhongChieu {
 	private String maPhong;
-	private boolean trangThai;
 	private List<Ghe> danhSachGhe;
 
-	public PhongChieu(String maPhong, boolean trangThai, List<Ghe> danhSachGhe) {
+	public PhongChieu(String maPhong, List<Ghe> danhSachGhe) {
 		this.maPhong = maPhong;
-		this.trangThai = trangThai;
 		this.danhSachGhe = danhSachGhe != null ? danhSachGhe : new ArrayList<>();
 	}
 
@@ -42,14 +40,6 @@ public class PhongChieu {
 		this.maPhong = maPhong;
 	}
 
-	public boolean isTrangThai() {
-		return trangThai;
-	}
-
-	public void setTrangThai(boolean trangThai) {
-		this.trangThai = trangThai;
-	}
-
 	public List<Ghe> getDanhSachGhe() {
 		return danhSachGhe;
 	}
@@ -60,7 +50,7 @@ public class PhongChieu {
 
 	@Override
 	public String toString() {
-		return "PhongChieu [maPhong=" + maPhong + ", trangThai=" + trangThai + ", danhSachGhe=" + danhSachGhe + "]";
+		return "PhongChieu [maPhong=" + maPhong  +  ", danhSachGhe=" + danhSachGhe + "]";
 	}
 
 }

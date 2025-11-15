@@ -41,9 +41,9 @@ public class DanhSachPhongChieu {
 		List<Ghe> ghePC2 = PhongChieu.taoDanhSachGhe(new char[] {'A', 'B', 'C', 'D', 'E', 'F'}, 12);
 		List<Ghe> ghePC3 = PhongChieu.taoDanhSachGhe(new char[] {'A', 'B', 'C', 'D'}, 8);
 
-		dsPhong.add(new PhongChieu("PC01", true, ghePC1));
-		dsPhong.add(new PhongChieu("PC02", true, ghePC2));
-		dsPhong.add(new PhongChieu("PC03", true, ghePC3));
+		dsPhong.add(new PhongChieu("PC01", ghePC1));
+		dsPhong.add(new PhongChieu("PC02", ghePC2));
+		dsPhong.add(new PhongChieu("PC03", ghePC3));
 	}
 	
 	public PhongChieu getPhongTheoChiSo(int index) {
